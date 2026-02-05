@@ -34,11 +34,13 @@ plugins {
 
 
 include(":app:android")
-include(":app:ios:ios-kotlin")
+include(":app:ios:ios-compose")
 include(":app:desktop-jvm")
 include(":app:web")
 include(":server")
 
+
+include(":shared:core")
 
 include(":shared:root:compose")
 include(":shared:root:presentation")

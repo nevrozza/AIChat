@@ -12,7 +12,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = Config.Android.sharedNamespace
+        namespace = Config.Android.namespace(project.path)
         compileSdk = Config.Android.compileSdk
         androidResources.enable = true
     }

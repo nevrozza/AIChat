@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.3.0"
+kotlin = "2.3.20-Beta2"
 ksp = "2.3.4"
 cmp = "1.10.0"
 agp = "9.0.0"
