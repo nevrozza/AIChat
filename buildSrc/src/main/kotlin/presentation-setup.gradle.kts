@@ -9,8 +9,11 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.bundles.decompose)
-            implementation(libs.bundles.flowmvi)
+            api(libs.bundles.presentation.api)
+
+            implementation(libs.koin.core)
+
+            implementation(libs.kotlinx.coroutines)
         }
     }
 }

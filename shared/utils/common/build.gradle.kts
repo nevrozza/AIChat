@@ -1,11 +1,11 @@
 plugins {
-    id("presentation-setup")
+    id("shared-setup")
 }
 
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.shared.utils.common)
+            implementation(libs.decompose.core)
         }
     }
 }
