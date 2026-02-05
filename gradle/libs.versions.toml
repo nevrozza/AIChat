@@ -16,8 +16,26 @@ logback = "1.5.27"
 koog = "0.6.1"
 
 
+# App Architecture
+koin = "4.2.0-RC1"
+decompose = "3.4.0"
+flowmvi = "3.3.0-alpha03"
+
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+
+# Koin
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+
+# Decompose
+decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+decompose-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+
+# FlowMVI
+flowmvi-core = { module = "pro.respawn.flowmvi:core", version.ref = "flowmvi" }
+flowmvi-essenty = { module = "pro.respawn.flowmvi:essenty", version.ref = "flowmvi" }
+flowmvi-essenty-compose = { module = "pro.respawn.flowmvi:essenty-compose", version.ref = "flowmvi" }
 
 
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -44,6 +62,12 @@ ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "kt
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 
 koog-ktor = { module = "ai.koog:koog-ktor", version.ref = "koog" }
+
+
+[bundles]
+decompose = ["decompose-core", "decompose-compose"]
+flowmvi = ["flowmvi-core", "flowmvi-essenty", "flowmvi-essenty-compose"]
+
 
 [plugins]
 androidApplication = { id = "com.android.application" }
