@@ -19,5 +19,5 @@ dependencies {
     implementation(libs.ktor.serverNetty)
     testImplementation(libs.ktor.serverTestHost)
 
-    testImplementation(libs.koog.ktor)
+    implementation(libs.koog.ktor)
 }
