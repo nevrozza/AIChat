@@ -16,6 +16,10 @@ kotlin {
         }
 
         commonMain.dependencies {
+            implementation(libs.flowmvi.essenty.compose)
+            implementation(libs.decompose.compose)
+
+
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -30,5 +34,9 @@ kotlin {
             "androidx.compose.material3.ExperimentalMaterial3Api",
             "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi"
         )
+    }
+
+    composeCompiler {
+        stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("stability_definitions.txt"))
     }
 }

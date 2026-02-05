@@ -7,5 +7,15 @@ plugins {
 }
 
 kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            api(libs.bundles.presentation.api)
 
+            implementation(libs.koin.core)
+
+            implementation(libs.kotlinx.coroutines)
+
+            implementation(project(":shared:utils:common")) // hate (there is no `projects`)
+        }
+    }
 }
