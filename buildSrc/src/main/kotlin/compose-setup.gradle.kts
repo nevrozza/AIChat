@@ -32,7 +32,8 @@ kotlin {
     compilerOptions {
         optIn.addAll(
             "androidx.compose.material3.ExperimentalMaterial3Api",
-            "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi"
+            "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
+            "com.arkivanov.decompose.ExperimentalDecomposeApi"
         )
     }
 

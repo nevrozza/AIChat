@@ -17,7 +17,7 @@ object Config {
         const val minSdk = 26
         const val targetSdk = 36
 
-        const val sharedNamespace = "$namespace.shared"
+        private const val sharedNamespace = "$namespace.shared"
 
         fun namespace(module: String?): String {
             print(module)

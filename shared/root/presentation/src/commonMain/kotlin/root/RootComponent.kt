@@ -14,6 +14,7 @@ interface RootComponent : DefaultStack<Config, Child> {
 
     @Serializable
     sealed interface Config {
+        @Serializable
         object Chats : Config
     }
 

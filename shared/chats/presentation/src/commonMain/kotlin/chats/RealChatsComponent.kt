@@ -21,13 +21,17 @@ import pro.respawn.flowmvi.api.Store
 import pro.respawn.flowmvi.dsl.state
 import pro.respawn.flowmvi.essenty.dsl.retainedStore
 import pro.respawn.flowmvi.essenty.dsl.subscribe
+import presentation.componentCoroutineScope
 
 class RealChatsComponent(
     componentCtx: ComponentContext,
     container: () -> ChatsContainer,
 ) :
     ChatsComponent, ComponentContext by componentCtx,
-    Store<ChatsState, ChatsIntent, ChatsAction> by componentCtx.retainedStore(factory = container) {
+    Store<ChatsState, ChatsIntent, ChatsAction> by componentCtx.retainedStore(
+        scope = componentCtx.componentCoroutineScope,
+        factory = container
+    ) {
     override val nav: StackNavigation<Config> = StackNavigation()
 
     private val _stack = childStack(

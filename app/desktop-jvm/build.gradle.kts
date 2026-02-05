@@ -11,6 +11,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.shared.root.compose)
+
+            implementation(libs.decompose.core)
+            implementation(libs.koin.core)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
