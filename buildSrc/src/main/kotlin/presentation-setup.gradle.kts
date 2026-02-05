@@ -14,6 +14,8 @@ kotlin {
             implementation(libs.koin.core)
 
             implementation(libs.kotlinx.coroutines)
+
+            implementation(project(":shared:utils:common")) // hate (there is no `projects`)
         }
     }
 }

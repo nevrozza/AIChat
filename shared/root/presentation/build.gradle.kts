@@ -5,7 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.shared.utils.common)
+            implementation(projects.shared.chats.presentation)
         }
     }
 }

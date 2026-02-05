@@ -43,6 +43,8 @@ include(":server")
 include(":shared:root:compose")
 include(":shared:root:presentation")
 
+include(":shared:chats:presentation")
+
 
 include(":shared:utils:common")
 include(":shared:utils:compose")
