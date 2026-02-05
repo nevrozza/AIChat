@@ -11,13 +11,15 @@ import pro.respawn.flowmvi.plugins.reduce
 
 import chats.mvi.ChatsState.*
 import chats.mvi.ChatsAction.*
+import kotlinx.coroutines.CoroutineScope
 
 private typealias Ctx = PipelineContext<ChatsState, ChatsIntent, ChatsAction>
 
 class ChatsContainer(
+    coroutineScope: CoroutineScope
 ) : Container<ChatsState, ChatsIntent, ChatsAction> {
 
-    override val store = store(initial = ChatsState()) {
+    override val store = store(initial = ChatsState(), scope = coroutineScope) {
         recover {
             updateState { copy(content = Content.Error(it)) }
             null

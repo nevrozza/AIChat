@@ -4,6 +4,11 @@ import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 
+data class ChatListItem(
+    val id: String,
+    val title: String
+)
+
 // immutability?
 data class ChatsState(
     val isChatsOpened: Boolean = false,
@@ -12,7 +17,7 @@ data class ChatsState(
     sealed interface Content {
         data object Loading : Content
         data class Error(val e: Exception?) : Content
-        data class OK(val chats: List<String>) : Content
+        data class OK(val chats: List<ChatListItem>) : Content
     }
 }
 

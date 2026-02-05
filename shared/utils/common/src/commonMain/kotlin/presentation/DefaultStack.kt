@@ -1,4 +1,4 @@
-package architecture
+package presentation
 
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation

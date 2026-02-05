@@ -1,6 +1,6 @@
 package chats
 
-import architecture.DefaultStack
+import presentation.DefaultStack
 import chat.ChatComponent
 import chats.ChatsComponent.Child
 import chats.ChatsComponent.Config

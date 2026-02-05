@@ -1,6 +1,6 @@
 package root
 
-import architecture.DefaultStack
+import presentation.DefaultStack
 import chats.ChatsComponent
 import kotlinx.serialization.Serializable
 import root.RootComponent.Child
