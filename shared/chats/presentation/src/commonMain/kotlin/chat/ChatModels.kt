@@ -13,15 +13,15 @@ data class ChatMessage(
 data class ChatState(
     val inputText: String = "",
     val messageFeed: MessageFeed,
-    val isAnswering: Boolean = false
 ) : MVIState {
     sealed interface MessageFeed : MVIState {
         data object NewChat : MessageFeed
         data object Loading : MessageFeed
-        data class LoadingError(val error: Exception?) : MessageFeed
+        data class LoadingError(val error: Exception) : MessageFeed
         data class ShowDialog(
             val messages: List<ChatMessage> = emptyList(),
             val isSending: Boolean = false,
+            val isAnswering: Boolean = false,
             val error: Exception? = null
         ) : MessageFeed
     }

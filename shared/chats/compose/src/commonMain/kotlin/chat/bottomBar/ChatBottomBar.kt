@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,14 +24,15 @@ internal fun ChatBottomBar(
 ) {
     Row(
         modifier
-            .fillMaxWidth()
             .height(IntrinsicSize.Max)
-            .padding(bottom = 20.dp)
-            .padding(horizontal = 40.dp),
+            .padding(bottom = 20.dp),
         verticalAlignment = Alignment.Bottom
     ) {
         ChatTextField(
-            modifier = Modifier.fillMaxHeight().weight(1f, true),
+            modifier = Modifier
+                .widthIn(min = 350.dp)
+                .fillMaxHeight()
+                .weight(1f, false),
             text = text,
             onTextChange = onTextChange
         )

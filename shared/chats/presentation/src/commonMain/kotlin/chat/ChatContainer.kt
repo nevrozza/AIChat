@@ -1,6 +1,6 @@
 package chat
 
-import chat.ChatState.*
+import chat.ChatState.MessageFeed
 import chats.mvi.ChatListItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -9,7 +9,6 @@ import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
 import pro.respawn.flowmvi.dsl.updateStateImmediate
-import pro.respawn.flowmvi.dsl.withStateOrThrow
 import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.recover
 import pro.respawn.flowmvi.plugins.reduce
@@ -34,12 +33,12 @@ class ChatContainer(
                 loadChat()
             }
         }
-
         recover {
             updateState {
                 if (messageFeed is MessageFeed.ShowDialog) {
                     copy(messageFeed = messageFeed.copy(error = it))
                 } else {
+                    println("meow")
                     this
                 }
             }
@@ -52,7 +51,9 @@ class ChatContainer(
                     copy(inputText = intent.text)
                 }
             }
+
         }
+
     }
 
     private fun Ctx.loadChat() = launch(AsyncDispatcher) {

@@ -1,14 +1,23 @@
 package chat
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.unit.dp
+import chat.ChatState.MessageFeed
 import chat.bottomBar.ChatBottomBar
+import chat.content.LoadingContent
+import chat.content.LoadingErrorContent
+import chat.content.NewChatContent
+import chat.content.showDialog.ShowDialogContent
+import flowMVI.TypeCrossfade
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
 
@@ -20,7 +29,8 @@ internal fun ChatScreen(
     val state by container.store.subscribe()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 20.dp),
         bottomBar = {
             ContainerChatBottomBar(
                 state,
@@ -29,7 +39,25 @@ internal fun ChatScreen(
             )
         }
     ) {
-        Text("meow")
+        TypeCrossfade(
+            state.messageFeed,
+            modifier = Modifier
+        ) {
+            when (this) {
+                MessageFeed.Loading -> LoadingContent()
+                is MessageFeed.LoadingError -> {
+                    LoadingErrorContent(error = this.error) { }
+                }
+
+                MessageFeed.NewChat -> NewChatContent()
+                is MessageFeed.ShowDialog -> ShowDialogContent(
+                    messages = this.messages,
+                    isAnswering = this.isAnswering,
+                    isSending = this.isSending,
+                    lastError = this.error
+                )
+            }
+        }
     }
 }
 
@@ -40,11 +68,13 @@ private fun ContainerChatBottomBar(
     onSendClick: () -> Unit
 ) {
 //    val animatedAlpha by animateFloatAsState(if (state.messageFeed is ChatState.MessageFeed.ShowDialog) 1f else .5f)
-    ChatBottomBar(
-        modifier = Modifier.alpha(1f),
-        text = state.inputText,
-        isAnswering = state.isAnswering,
-        onTextChange = onTextChange,
-        onSendClick = onSendClick
-    )
+    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        ChatBottomBar(
+            modifier = Modifier.alpha(1f),
+            text = state.inputText,
+            isAnswering = (state.messageFeed as? MessageFeed.ShowDialog)?.isAnswering ?: false,
+            onTextChange = onTextChange,
+            onSendClick = onSendClick
+        )
+    }
 }

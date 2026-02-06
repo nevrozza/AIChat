@@ -1,5 +1,6 @@
 package chat.bottomBar
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,6 +18,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +42,9 @@ internal fun ChatTextField(
         BasicTextField(
             value = text,
             onValueChange = onTextChange,
-            modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp),
+            modifier = Modifier
+                .padding(vertical = 10.dp, horizontal = 15.dp)
+                .animateContentSize(),
             textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
             cursorBrush = SolidColor(colors.cursor),
             decorationBox = { innerTextField ->
@@ -48,15 +52,15 @@ internal fun ChatTextField(
                     Modifier.width(IntrinsicSize.Max),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    if (text.isEmpty()) {
-                        Text(
-                            text = "Введите запрос",
-                            style = textStyle.copy(fontWeight = FontWeight.Medium),
-                            color = colors.placeholder,
-                            maxLines = 1,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+
+                    Text(
+                        text = "Введите запрос",
+                        style = textStyle.copy(fontWeight = FontWeight.Medium),
+                        color = colors.placeholder,
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth().alpha(if (text.isEmpty()) 1f else 0f)
+                    )
+
                     innerTextField()
                 }
             }
