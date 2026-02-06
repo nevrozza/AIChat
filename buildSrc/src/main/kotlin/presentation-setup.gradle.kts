@@ -15,7 +15,7 @@ kotlin {
 
             implementation(libs.kotlinx.coroutines)
 
-            implementation(project(":shared:utils:common")) // hate (there is no `projects`)
+            api(project(":shared:utils:common")) // hate (there is no `projects`)
         }
     }
 }

@@ -4,11 +4,13 @@ import chats.mvi.ChatListItem
 import com.arkivanov.decompose.ComponentContext
 import presentation.componentCoroutineScope
 
-interface ChatComponent
+interface ChatComponent {
+    val container: ChatContainer
+}
 
 class RealChatComponent(
     componentCtx: ComponentContext,
     chatConfig: ChatListItem?
 ) : ChatComponent, ComponentContext by componentCtx {
-    val container = ChatContainer(chatConfig, componentCoroutineScope)
+    override val container = ChatContainer(chatConfig, componentCoroutineScope)
 }
