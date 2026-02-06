@@ -11,10 +11,12 @@ data class ChatMessage(
 
 // immutability?
 data class ChatState(
-    val inputText: String,
-    val messageFeed: MessageFeed
+    val inputText: String = "",
+    val messageFeed: MessageFeed,
+    val isAnswering: Boolean = false
 ) : MVIState {
     sealed interface MessageFeed : MVIState {
+        data object NewChat : MessageFeed
         data object Loading : MessageFeed
         data class LoadingError(val error: Exception?) : MessageFeed
         data class ShowDialog(

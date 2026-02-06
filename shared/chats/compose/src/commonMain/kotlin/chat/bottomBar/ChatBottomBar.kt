@@ -2,26 +2,43 @@ package chat.bottomBar
 
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun ChatBottomBar(
     modifier: Modifier = Modifier,
     text: String,
-    isLoading: Boolean,
+    isAnswering: Boolean,
     onSendClick: () -> Unit,
     onTextChange: (String) -> Unit
 ) {
-    Row(modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
-        ChatTextField(modifier = Modifier.fillMaxHeight(), text = text, onTextChange = onTextChange)
+    Row(
+        modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max)
+            .padding(bottom = 20.dp)
+            .padding(horizontal = 40.dp),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        ChatTextField(
+            modifier = Modifier.fillMaxHeight().weight(1f, true),
+            text = text,
+            onTextChange = onTextChange
+        )
+        Spacer(Modifier.width(10.dp))
         ChatSendButton(
-            modifier = Modifier.fillMaxHeight().aspectRatio(1f),
-            isLoading = isLoading,
+            modifier = Modifier.height(50.dp).aspectRatio(1f),
+            isBlockable = isAnswering,
             onClick = onSendClick
         )
     }
