@@ -1,41 +1,61 @@
 package chats
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import chat.ChatScreen
 import chats.drawer.AdaptiveDrawerContainer
 import chats.drawer.ChatListDrawer
+import chats.drawer.LocalChatDrawerState
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import pro.respawn.flowmvi.compose.dsl.subscribe
+import kotlinx.coroutines.launch
+import pro.respawn.flowmvi.essenty.compose.subscribe
 
 @Composable
 fun ChatsScreen(
     component: ChatsComponent
 ) {
-
     val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    AdaptiveDrawerContainer(
-        drawerState,
-        drawerContent = {
-            ChatListDrawer(component)
-        },
-        content = {
-            ChatsStack(component)
+
+    val state by component.subscribe(component)
+
+    LaunchedEffect(component) {
+        component.uiEvents.collect { event ->
+            when (event) {
+                is ChatsComponent.UIEvent.SetDrawerOpened -> {
+                    launch {
+                        with(drawerState) {
+                            if (event.isOpened) open()
+                            else close()
+                        }
+                    }
+                }
+            }
         }
-    )
+    }
+
+
+    CompositionLocalProvider(LocalChatDrawerState provides drawerState) {
+        AdaptiveDrawerContainer(
+            drawerState,
+            drawerContent = {
+                ChatListDrawer(component)
+            },
+            content = {
+
+                ChatsStack(component)
+            }
+        )
+    }
 
 }
 

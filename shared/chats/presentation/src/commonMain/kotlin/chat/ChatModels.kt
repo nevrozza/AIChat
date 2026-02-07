@@ -13,6 +13,7 @@ data class ChatMessage(
 data class ChatState(
     val inputText: String = "",
     val messageFeed: MessageFeed,
+    val chatTitle: String
 ) : MVIState {
     sealed interface MessageFeed : MVIState {
         data object NewChat : MessageFeed

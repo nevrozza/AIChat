@@ -21,7 +21,10 @@ class ChatContainer(
 ) : Container<ChatState, ChatIntent, Nothing> {
 
     override val store = store(
-        initial = ChatState(messageFeed = if (chatConfig == null) MessageFeed.NewChat else MessageFeed.Loading),
+        initial = ChatState(
+            chatTitle = chatConfig?.title ?: "Новый чат",
+            messageFeed = if (chatConfig == null) MessageFeed.NewChat else MessageFeed.Loading
+        ),
         scope = coroutineScope
     ) {
         if (chatConfig != null) {

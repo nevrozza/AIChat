@@ -14,6 +14,8 @@ object CommonPaddings {
         WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 20.dp
 
     @Composable
-    fun calculateTopPadding(): Dp =
-        WindowInsets.safeContent.asPaddingValues().calculateTopPadding() + 20.dp
+    fun calculateTopPadding(): Dp {
+        val topPadding = WindowInsets.safeContent.asPaddingValues().calculateTopPadding()
+        return calculateBottomPadding().coerceAtLeast(topPadding)
+    }
 }

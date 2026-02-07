@@ -19,16 +19,20 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+
+val LocalChatDrawerState = staticCompositionLocalOf<DrawerState> {
+    error("No DrawerState provided")
+}
 
 @Composable
 internal fun AdaptiveDrawerContainer(
@@ -54,7 +58,7 @@ internal fun AdaptiveDrawerContainer(
 
         val mobileDarkenBackground: Modifier.() -> Modifier = {
             this.drawBehind {
-                drawRect(Color.Black.copy(alpha = abs(((mobileDrawerProgress - darkenProgressEpsilon) * 0.6f))))
+                drawRect(Color.Black.copy(alpha = abs(((mobileDrawerProgress - darkenProgressEpsilon) * .4f))))
             }
         }
 
@@ -62,7 +66,7 @@ internal fun AdaptiveDrawerContainer(
         if (isWide) {
             Row(Modifier.fillMaxSize()) {
                 AnimatedVisibility(
-                    visible = drawerState.isOpen,
+                    visible = drawerState.targetValue == DrawerValue.Open,
                     enter = expandHorizontally(),
                     exit = shrinkHorizontally()
                 ) {

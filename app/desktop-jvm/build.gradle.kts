@@ -12,6 +12,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.shared.root.compose)
 
+            implementation(libs.decompose.compose)
             implementation(libs.decompose.core)
             implementation(libs.koin.core)
         }

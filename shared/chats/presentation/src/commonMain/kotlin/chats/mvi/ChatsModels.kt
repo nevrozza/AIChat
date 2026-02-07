@@ -10,23 +10,21 @@ data class ChatListItem(
 )
 
 // immutability?
-data class ChatsState(
-    val isChatsOpened: Boolean = false,
-    val content: Content = Content.Loading
-) : MVIState {
-    sealed interface Content {
-        data object Loading : Content
-        data class Error(val e: Exception?) : Content
-        data class OK(val chats: List<ChatListItem>) : Content
-    }
+sealed interface ChatsState : MVIState {
+    data object Loading : ChatsState
+    data class Error(val e: Exception?) : ChatsState
+    data class OK(val chats: List<ChatListItem>) : ChatsState
 }
 
+
 sealed interface ChatsIntent : MVIIntent {
-    data object OpenedChats : ChatsIntent
+    data class SetDrawerOpened(val isOpened: Boolean) : ChatsIntent
     data class SelectedChat(val id: String) : ChatsIntent
 }
 
 // immutability?
 sealed interface ChatsAction : MVIAction {
+    data class SetDrawerOpened(val isOpened: Boolean) : ChatsAction
+
     data class SelectChat(val id: String) : ChatsAction
 }

@@ -4,6 +4,7 @@ import chat.RealChatComponent
 import chats.ChatsComponent.Child
 import chats.ChatsComponent.Child.ChatChild
 import chats.ChatsComponent.Config
+import chats.ChatsComponent.Config.Chat
 import chats.mvi.ChatListItem
 import chats.mvi.ChatsAction
 import chats.mvi.ChatsAction.SelectChat
@@ -16,35 +17,44 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
+import kotlinx.coroutines.flow.MutableSharedFlow
 import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.Store
 import pro.respawn.flowmvi.dsl.state
 import pro.respawn.flowmvi.essenty.dsl.retainedStore
 import pro.respawn.flowmvi.essenty.dsl.subscribe
-import presentation.componentCoroutineScope
 
+@OptIn(DelicateStoreApi::class)
 class RealChatsComponent(
     componentCtx: ComponentContext,
     container: () -> ChatsContainer,
 ) :
     ChatsComponent, ComponentContext by componentCtx,
     Store<ChatsState, ChatsIntent, ChatsAction> by componentCtx.retainedStore(
-        scope = componentCtx.componentCoroutineScope,
         factory = container
     ) {
+
+    override val uiEvents: MutableSharedFlow<ChatsComponent.UIEvent> =
+        MutableSharedFlow(extraBufferCapacity = 64)
+
     override val nav: StackNavigation<Config> = StackNavigation()
 
     private val _stack = childStack(
         source = nav,
         serializer = Config.serializer(),
-        initialConfiguration = Config.Chat(null),
+        initialConfiguration = Chat(null),
         childFactory = { config, childCtx ->
             @OptIn(DelicateStoreApi::class)
-            val chatConfig: ChatListItem? = (config as? Config.Chat)?.id?.let {
-                (this.state.content as? ChatsState.Content.OK)?.chats?.firstOrNull { it.id == config.id }
+            val chatConfig: ChatListItem? = (config as? Chat)?.id?.let {
+                (this.state as? ChatsState.OK)?.chats?.firstOrNull { it.id == config.id }
             }
             ChatChild(
-                RealChatComponent(childCtx, chatConfig = chatConfig)
+                RealChatComponent(
+                    childCtx,
+                    chatConfig = chatConfig
+                ) {
+                    intent(ChatsIntent.SetDrawerOpened(true))
+                }
             )
         },
         handleBackButton = true
@@ -55,13 +65,16 @@ class RealChatsComponent(
 
     init {
         subscribe {
+            println("smth")
             actions.collect { action ->
                 when (action) {
-                    is SelectChat -> nav.pushToFront(Config.Chat(action.id))
+                    is SelectChat -> nav.pushToFront(Chat(action.id))
+                    is ChatsAction.SetDrawerOpened ->
+                        uiEvents.emit(ChatsComponent.UIEvent.SetDrawerOpened(action.isOpened))
+
                 }
             }
         }
     }
-
 
 }
