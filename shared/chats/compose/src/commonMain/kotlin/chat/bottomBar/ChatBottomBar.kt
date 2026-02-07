@@ -24,8 +24,7 @@ internal fun ChatBottomBar(
 ) {
     Row(
         modifier
-            .height(IntrinsicSize.Max)
-            .padding(bottom = 20.dp),
+            .height(IntrinsicSize.Max),
         verticalAlignment = Alignment.Bottom
     ) {
         ChatTextField(

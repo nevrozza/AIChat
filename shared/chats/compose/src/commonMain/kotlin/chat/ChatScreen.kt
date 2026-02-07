@@ -1,5 +1,6 @@
 package chat
 
+import CommonPaddings.calculateBottomPadding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.unit.dp
 import chat.ChatState.MessageFeed
 import chat.bottomBar.ChatBottomBar
 import chat.content.LoadingContent
@@ -30,9 +30,9 @@ internal fun ChatScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = CommonPaddings.horizontalContentPadding),
         bottomBar = {
-            ContainerChatBottomBar(
+            StateChatBottomBar(
                 state,
                 onTextChange = { container.intent(ChatIntent.TypedMessage(it)) },
                 onSendClick = { container.intent(ChatIntent.SentMessage) }
@@ -62,13 +62,13 @@ internal fun ChatScreen(
 }
 
 @Composable
-private fun ContainerChatBottomBar(
+private fun StateChatBottomBar(
     state: ChatState,
     onTextChange: (String) -> Unit,
     onSendClick: () -> Unit
 ) {
 //    val animatedAlpha by animateFloatAsState(if (state.messageFeed is ChatState.MessageFeed.ShowDialog) 1f else .5f)
-    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxWidth().padding(bottom = calculateBottomPadding()), contentAlignment = Alignment.Center) {
         ChatBottomBar(
             modifier = Modifier.alpha(1f),
             text = state.inputText,

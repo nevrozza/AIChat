@@ -1,45 +1,63 @@
-package chats
+package chats.drawer
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 @Composable
 internal fun AdaptiveDrawerContainer(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    drawerContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
-    BoxWithConstraints {
-        val customDrawerWidth = (maxWidth * 0.5f).coerceAtLeast(150.dp)
-        val drawerWidthPx = with(LocalDensity.current) { customDrawerWidth.toPx() }
+    val focusManager = LocalFocusManager.current
 
+    BoxWithConstraints {
         val isWide = maxWidth >= 800.dp
+
+        val mobileDrawerWidth = (maxWidth * 0.85f).coerceAtLeast(150.dp)
+        val mobileDrawerWidthPx = with(LocalDensity.current) { mobileDrawerWidth.toPx() }
+
+        val mobileDrawerProgress =
+            if (mobileDrawerWidthPx > 0) ((mobileDrawerWidthPx + drawerState.currentOffset) / mobileDrawerWidthPx)
+                .coerceIn(0f, 1f) else 0f
+
+        val darkenProgressEpsilon = 0.01f
+
+        val mobileDarkenBackground: Modifier.() -> Modifier = {
+            this.drawBehind {
+                drawRect(Color.Black.copy(alpha = abs(((mobileDrawerProgress - darkenProgressEpsilon) * 0.6f))))
+            }
+        }
+
 
         if (isWide) {
             Row(Modifier.fillMaxSize()) {
@@ -52,8 +70,8 @@ internal fun AdaptiveDrawerContainer(
                         Modifier
                             .width(300.dp)
                             .fillMaxHeight()
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
+                        drawerContent()
                     }
                 }
 
@@ -67,30 +85,24 @@ internal fun AdaptiveDrawerContainer(
                 drawerContent = {
                     DismissibleDrawerSheet(
                         Modifier
-                            .width(customDrawerWidth)
+                            .width(mobileDrawerWidth),
+                        windowInsets = WindowInsets()
+
                     ) {
                         Box(
-                            Modifier.fillMaxWidth().fillMaxHeight()
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                        )
+                            Modifier.fillMaxSize().mobileDarkenBackground()
+                        ) {
+                            drawerContent()
+                        }
                     }
                 }
             ) {
                 content()
-
-
-                val progress =
-                    if (drawerWidthPx > 0) ((drawerWidthPx + drawerState.currentOffset) / drawerWidthPx).coerceIn(
-                        0f,
-                        1f
-                    ) else 0f
-
-                if (progress > 0f) {
+                if (mobileDrawerProgress > darkenProgressEpsilon) {
                     Box(
                         Modifier
                             .fillMaxSize()
-                            .graphicsLayer { alpha = progress * 0.6f }
-                            .background(Color.Black)
+                            .mobileDarkenBackground()
                             .pointerInput(Unit) {
                                 detectTapGestures {
                                     scope.launch { drawerState.close() }
@@ -99,6 +111,12 @@ internal fun AdaptiveDrawerContainer(
                     )
                 }
             }
+        }
+    }
+
+    LaunchedEffect(drawerState.isOpen) {
+        if (drawerState.isOpen) {
+            focusManager.clearFocus()
         }
     }
 }
