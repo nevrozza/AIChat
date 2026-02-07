@@ -11,7 +11,7 @@ object CommonPaddings {
 
     @Composable
     fun calculateBottomPadding(): Dp =
-        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 20.dp
+       WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 20.dp
 
     @Composable
     fun calculateTopPadding(): Dp {

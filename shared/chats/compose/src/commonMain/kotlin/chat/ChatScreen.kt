@@ -1,10 +1,12 @@
 package chat
 
+import CommonPaddings
 import CommonPaddings.calculateBottomPadding
 import CommonPaddings.calculateTopPadding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import pro.respawn.flowmvi.essenty.compose.subscribe
 internal fun ChatScreen(
     component: ChatComponent
 ) {
+
     val container = component.container
     val state by container.store.subscribe(component)
 
@@ -79,7 +82,7 @@ private fun StateChatBottomBar(
 ) {
 //    val animatedAlpha by animateFloatAsState(if (state.messageFeed is ChatState.MessageFeed.ShowDialog) 1f else .5f)
     Box(
-        Modifier.fillMaxWidth().padding(bottom = calculateBottomPadding()),
+        Modifier.fillMaxWidth().padding(bottom = calculateBottomPadding()).imePadding(),
         contentAlignment = Alignment.Center
     ) {
         ChatBottomBar(
