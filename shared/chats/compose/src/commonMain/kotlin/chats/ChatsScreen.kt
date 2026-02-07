@@ -1,5 +1,8 @@
 package chats
 
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import chat.ChatScreen
@@ -16,8 +19,11 @@ fun ChatsScreen(
 ) {
     val state by component.subscribe()
 
+    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    ChatsStack(component)
+    AdaptiveDrawerContainer(drawerState) {
+        ChatsStack(component)
+    }
 
 }
 
