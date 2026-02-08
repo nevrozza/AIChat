@@ -1,12 +1,12 @@
 package chat
 
 import aichat.shared.chats.compose.generated.resources.Res
+import aichat.shared.chats.compose.generated.resources.drawer_open
 import aichat.shared.chats.compose.generated.resources.send
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import chats.drawer.LocalChatDrawerState
 import org.jetbrains.compose.resources.painterResource
 
@@ -35,13 +34,14 @@ internal fun ChatTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(Modifier.minimumInteractiveComponentSize()) {
-            AnimatedVisibility(drawerState.targetValue == DrawerValue.Closed) {
+        Row(Modifier.minimumInteractiveComponentSize()) {
+            AnimatedVisibility(
+                drawerState.targetValue == DrawerValue.Closed
+            ) {
                 IconButton(onClick = onDrawerClick) {
                     Icon(
-                        painter = painterResource(Res.drawable.send),
-                        contentDescription = "OpenDrawer",
-                        modifier = Modifier.padding(10.dp),
+                        painter = painterResource(Res.drawable.drawer_open),
+                        contentDescription = "OpenDrawer"
                     )
                 }
             }
@@ -62,8 +62,7 @@ internal fun ChatTopBar(
                 IconButton(onClick = onNewChatClick) {
                     Icon(
                         painter = painterResource(Res.drawable.send),
-                        contentDescription = "NewChat",
-                        modifier = Modifier.padding(10.dp),
+                        contentDescription = "NewChat"
                     )
                 }
             }

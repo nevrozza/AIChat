@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun SurfaceButton(
     modifier: Modifier,
+    enabled: Boolean = true,
     onClick: () -> Unit,
     icon: @Composable () -> Unit
 ) {
@@ -15,7 +16,8 @@ fun SurfaceButton(
         modifier = modifier,
         color = ChatBottomBarDefaults.color,
         shape = CircleShape,
-        onClick = onClick
+        onClick = onClick,
+        enabled = enabled
     ) {
         icon()
     }

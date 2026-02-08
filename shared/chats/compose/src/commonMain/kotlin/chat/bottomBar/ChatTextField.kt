@@ -35,31 +35,35 @@ internal fun ChatTextField(
         color = ChatBottomBarDefaults.color,
         shape = RoundedCornerShape(20.dp)
     ) {
-        BasicTextField(
-            value = text,
-            onValueChange = onTextChange,
-            modifier = Modifier
+        Box(
+            Modifier
                 .padding(vertical = 10.dp, horizontal = 15.dp)
-                .animateContentSize(),
-            textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
-            cursorBrush = SolidColor(colors.cursor),
-            decorationBox = { innerTextField ->
-                Box(
-                    Modifier.width(IntrinsicSize.Max),
-                    contentAlignment = Alignment.CenterStart
-                ) {
+                .animateContentSize().width(IntrinsicSize.Max),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            BasicTextField(
+                value = text,
+                onValueChange = onTextChange,
+                textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
+                cursorBrush = SolidColor(colors.cursor),
+                decorationBox = { innerTextField ->
+                    Box(
+                        Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
 
-                    Text(
-                        text = "Введите запрос",
-                        style = textStyle.copy(fontWeight = FontWeight.Medium),
-                        color = colors.placeholder,
-                        maxLines = 1,
-                        modifier = Modifier.fillMaxWidth().alpha(if (text.isEmpty()) 1f else 0f)
-                    )
+                        Text(
+                            text = "Введите запрос",
+                            style = textStyle.copy(fontWeight = FontWeight.Medium),
+                            color = colors.placeholder,
+                            maxLines = 1,
+                            modifier = Modifier.fillMaxWidth().alpha(if (text.isEmpty()) 1f else 0f)
+                        )
 
-                    innerTextField()
+                        innerTextField()
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
