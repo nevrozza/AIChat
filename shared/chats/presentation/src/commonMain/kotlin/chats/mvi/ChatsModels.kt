@@ -19,12 +19,12 @@ sealed interface ChatsState : MVIState {
 
 sealed interface ChatsIntent : MVIIntent {
     data class SetDrawerOpened(val isOpened: Boolean) : ChatsIntent
-    data class SelectedChat(val id: String) : ChatsIntent
+    data class SelectedChat(val id: String?) : ChatsIntent
 }
 
 // immutability?
 sealed interface ChatsAction : MVIAction {
     data class SetDrawerOpened(val isOpened: Boolean) : ChatsAction
 
-    data class SelectChat(val id: String) : ChatsAction
+    data class SelectChat(val id: String?) : ChatsAction
 }

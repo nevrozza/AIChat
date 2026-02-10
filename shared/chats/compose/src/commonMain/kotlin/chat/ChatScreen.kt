@@ -48,7 +48,7 @@ internal fun ChatScreen(
                 title = state.chatTitle,
                 onDrawerClick = component.onDrawerClick,
                 onNewChatClick = { },
-                isNewChatButtonVisible = state.messageFeed is MessageFeed.ShowDialog
+                isNewChatButtonVisible = state.messageFeed !is MessageFeed.NewChat
             )
         }
     ) {

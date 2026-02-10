@@ -2,7 +2,7 @@ package chat
 
 import aichat.shared.chats.compose.generated.resources.Res
 import aichat.shared.chats.compose.generated.resources.drawer_open
-import aichat.shared.chats.compose.generated.resources.send
+import aichat.shared.chats.compose.generated.resources.edit_square
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -61,7 +61,7 @@ internal fun ChatTopBar(
             ) {
                 IconButton(onClick = onNewChatClick) {
                     Icon(
-                        painter = painterResource(Res.drawable.send),
+                        painter = painterResource(Res.drawable.edit_square),
                         contentDescription = "NewChat"
                     )
                 }

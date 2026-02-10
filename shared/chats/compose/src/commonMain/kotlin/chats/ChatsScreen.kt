@@ -17,16 +17,12 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import kotlinx.coroutines.launch
-import pro.respawn.flowmvi.essenty.compose.subscribe
 
 @Composable
 fun ChatsScreen(
     component: ChatsComponent
 ) {
     val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
-
-    val state by component.subscribe(component)
 
     LaunchedEffect(component) {
         component.uiEvents.collect { event ->
