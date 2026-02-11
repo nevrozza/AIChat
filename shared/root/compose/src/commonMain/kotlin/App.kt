@@ -1,6 +1,7 @@
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.expressiveLightColorScheme
@@ -13,7 +14,8 @@ fun App(
     rootComponent: RootComponent
 ) {
     MaterialExpressiveTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else expressiveLightColorScheme()
+        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else expressiveLightColorScheme(),
+        motionScheme = MotionScheme.standard()
     ) {
         Surface(Modifier.fillMaxSize()) {
             RootScreen(rootComponent)

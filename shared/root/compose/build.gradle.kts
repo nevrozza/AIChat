@@ -9,6 +9,8 @@ kotlin {
             api(projects.shared.root.presentation)
             api(projects.shared.utils.common)
 
+            implementation(projects.shared.chats.compose)
+
         }
     }
 }

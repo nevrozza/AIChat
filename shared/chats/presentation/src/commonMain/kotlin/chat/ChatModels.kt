@@ -10,14 +10,22 @@ data class ChatMessage(
 
 
 // immutability?
-sealed interface ChatState : MVIState {
-    data object Loading : ChatState
-    data class LoadingError(val error: Exception?) : ChatState
-    data class ShowDialog(
-        val messages: List<ChatMessage> = emptyList(),
-        val isSending: Boolean = false,
-        val error: Exception? = null
-    ) : ChatState
+data class ChatState(
+    val inputText: String = "",
+    val messageFeed: MessageFeed,
+    val chatTitle: String
+) : MVIState {
+    sealed interface MessageFeed : MVIState {
+        data object NewChat : MessageFeed
+        data object Loading : MessageFeed
+        data class LoadingError(val error: Exception) : MessageFeed
+        data class ShowDialog(
+            val messages: List<ChatMessage> = emptyList(),
+            val isSending: Boolean = false,
+            val isAnswering: Boolean = false,
+            val error: Exception? = null
+        ) : MessageFeed
+    }
 }
 
 sealed interface ChatIntent : MVIIntent {

@@ -1,6 +1,5 @@
 package root
 
-import chats.ChatsComponent
 import chats.RealChatsComponent
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack

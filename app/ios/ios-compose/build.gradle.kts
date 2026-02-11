@@ -1,7 +1,9 @@
 
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.composeMultiplatform)
 }
 
 kotlin {
@@ -20,6 +22,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.shared.root.compose)
+            implementation(libs.compose.components.resources)
         }
     }
 }

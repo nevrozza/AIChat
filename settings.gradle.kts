@@ -45,6 +45,7 @@ include(":shared:core")
 include(":shared:root:compose")
 include(":shared:root:presentation")
 
+include(":shared:chats:compose")
 include(":shared:chats:presentation")
 
 
