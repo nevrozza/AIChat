@@ -14,6 +14,9 @@ application {
 }
 
 dependencies {
+    implementation(projects.shared.chats.api)
+
+
     implementation(libs.logback)
     implementation(libs.ktor.serverCore)
     implementation(libs.ktor.serverNetty)

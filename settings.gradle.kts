@@ -47,6 +47,8 @@ include(":shared:root:presentation")
 
 include(":shared:chats:compose")
 include(":shared:chats:presentation")
+include(":shared:chats:api")
+include(":shared:chats:domain")
 
 
 include(":shared:utils:common")

@@ -11,6 +11,7 @@ material3 = "1.10.0-alpha05"
 stability = "0.6.6"
 
 ktor = "3.4.0"
+serialization = "1.10.0"
 
 logback = "1.5.27"
 koog = "0.6.1"
@@ -41,6 +42,8 @@ flowmvi-essenty-compose = { module = "pro.respawn.flowmvi:essenty-compose", vers
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
+kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization" }
 
 compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "cmp" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "cmp" }
@@ -69,7 +72,7 @@ koog-ktor = { module = "ai.koog:koog-ktor", version.ref = "koog" }
 
 [bundles]
 presentation-api = ["decompose-core", "flowmvi-core", "flowmvi-essenty"]
-
+serialization = ["kotlinx-serialization-core", "kotlinx-serialization-protobuf"]
 
 [plugins]
 androidApplication = { id = "com.android.application" }
