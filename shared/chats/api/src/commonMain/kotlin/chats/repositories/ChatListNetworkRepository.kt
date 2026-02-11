@@ -5,5 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChatListNetworkRepository {
     val chats: Flow<List<ChatInfoDTO>>
-    suspend fun createChat(name: String, participantIds: List<String>): Result<ChatInfoDTO>
+    suspend fun createChat(name: String): Result<ChatInfoDTO>
 }
+

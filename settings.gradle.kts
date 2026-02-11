@@ -53,3 +53,4 @@ include(":shared:chats:domain")
 
 include(":shared:utils:common")
 include(":shared:utils:compose")
+include(":shared:utils:api")

@@ -18,10 +18,10 @@ dependencies {
 
 
     implementation(libs.logback)
-    implementation(libs.ktor.serverCore)
-    implementation(libs.ktor.serverNetty)
-    implementation(libs.ktor.serverCors)
-    implementation(libs.ktor.serverWebSockets)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.cors)
+    implementation(libs.ktor.server.websockets)
 
     implementation(libs.koog.ktor)
 }
