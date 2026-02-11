@@ -17,7 +17,8 @@ dependencies {
     implementation(libs.logback)
     implementation(libs.ktor.serverCore)
     implementation(libs.ktor.serverNetty)
-    testImplementation(libs.ktor.serverTestHost)
+    implementation(libs.ktor.serverCors)
+    implementation(libs.ktor.serverWebSockets)
 
     implementation(libs.koog.ktor)
 }
