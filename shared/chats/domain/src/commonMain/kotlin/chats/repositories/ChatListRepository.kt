@@ -1,6 +1,4 @@
-package repositories
-
-import chats.repositories.ChatListNetworkRepository
+package chats.repositories
 
 interface ChatListRepository : ChatListNetworkRepository {
     // other

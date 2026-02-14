@@ -1,13 +1,11 @@
 package chats.mvi
 
+import chats.entity.ChatListItem
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 
-data class ChatListItem(
-    val id: String,
-    val title: String
-)
+
 
 // immutability?
 sealed interface ChatsState : MVIState {

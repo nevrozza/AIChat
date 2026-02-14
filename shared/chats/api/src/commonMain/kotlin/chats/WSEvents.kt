@@ -1,11 +1,11 @@
 package chats
 
-import chats.entities.ChatInfoDTO
+import chats.dtos.ChatInfoDTO
 import utils.api.Event.ClientEvent
 import utils.api.Event.ServerEvent
 
-sealed interface ChatServerEvent : ServerEvent {
-    data class UpdateChatList(val chatsInfo: List<ChatInfoDTO>) : ChatServerEvent
+sealed interface ChatListServerEvent : ServerEvent {
+    data class UpdateChatList(val chatsInfo: List<ChatInfoDTO>) : ChatListServerEvent
 }
 
 sealed interface ChatClientEvent : ClientEvent {

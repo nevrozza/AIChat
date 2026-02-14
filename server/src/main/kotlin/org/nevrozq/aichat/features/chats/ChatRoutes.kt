@@ -1,8 +1,7 @@
 package org.nevrozq.aichat.features.chats
 
 import chats.ChatClientEvent
-import chats.ChatServerEvent
-import chats.repositories.ChatListNetworkRepository
+import chats.ChatListServerEvent
 import io.ktor.server.routing.Route
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
@@ -16,14 +15,14 @@ import utils.api.Event
 import utils.api.WSFrame
 
 @OptIn(ExperimentalSerializationApi::class)
-fun Route.chatsRoutes() {
-    val chatService: ChatListNetworkRepository = ChatsService() // TODO: DI
+fun Route.chatRoutes() {
+    val chatService = ChatsService() // TODO: DI
 
     webSocket("/chat") {
 
         val job = launch {
             chatService.chats.collect { chatsInfo ->
-                sendWSResponse(id = null, ChatServerEvent.UpdateChatList(chatsInfo))
+                sendWSResponse(id = null, ChatListServerEvent.UpdateChatList(chatsInfo))
             }
         }
 

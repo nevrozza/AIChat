@@ -1,4 +1,4 @@
-package chats.entities
+package chats.dtos
 
 import kotlinx.serialization.Serializable
 
