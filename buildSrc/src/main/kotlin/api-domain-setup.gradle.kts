@@ -10,7 +10,7 @@ kotlin {
             // for flow
             implementation(libs.kotlinx.coroutines)
 
-            implementation(libs.bundles.serialization)
+            api(project(":shared:utils:api"))
         }
     }
 }

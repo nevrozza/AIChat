@@ -2,20 +2,17 @@ package utils.api
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-sealed interface Event {
-    @Serializable
-    sealed interface ServerEvent : Event
+
+interface Event {
+
+    interface ServerEvent : Event
+
+    interface ClientEvent : Event
+
 
     @Serializable
-    sealed interface ClientEvent : Event
+    data object AllGucci : Event
 
-
-    // Common events
-    @Serializable
-    data object Connected : Event
-    @Serializable
-    data object Disconnected : Event
     @Serializable
     data class Error(val message: String) : Event
 }

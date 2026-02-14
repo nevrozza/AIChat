@@ -15,6 +15,7 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.send
 import kotlinx.coroutines.delay
+import org.nevrozq.aichat.features.allRoutes
 import org.nevrozq.aichat.plugins.configureCORS
 import org.nevrozq.aichat.plugins.configureKoog
 import org.nevrozq.aichat.plugins.configureWebSockets
@@ -31,6 +32,8 @@ fun Application.module() {
     configureCORS()
     configureKoog()
     configureWebSockets()
+
+    allRoutes()
 
 
     routing {
