@@ -18,21 +18,26 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.Store
 import pro.respawn.flowmvi.dsl.state
 import pro.respawn.flowmvi.essenty.dsl.retainedStore
 import pro.respawn.flowmvi.essenty.dsl.subscribe
+import utils.api.SocketState
 
 @OptIn(DelicateStoreApi::class)
 class RealChatsComponent(
     componentCtx: ComponentContext,
     container: () -> ChatsContainer,
 ) :
-    ChatsComponent, ComponentContext by componentCtx,
+    ChatsComponent, KoinComponent, ComponentContext by componentCtx,
     Store<ChatsState, ChatsIntent, ChatsAction> by componentCtx.retainedStore(
         factory = container
     ) {
+    override val socketState: StateFlow<SocketState> = get()
 
     override val uiEvents: MutableSharedFlow<ChatsComponent.UIEvent> =
         MutableSharedFlow(extraBufferCapacity = 64)

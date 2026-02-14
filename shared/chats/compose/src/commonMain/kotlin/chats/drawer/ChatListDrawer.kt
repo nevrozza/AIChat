@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,17 +44,14 @@ import pro.respawn.flowmvi.essenty.compose.subscribe
 internal fun ChatListDrawer(
     component: ChatsComponent,
 ) {
+    val socketState by component.socketState.collectAsState()
+
     val containerShapeDp = 40.dp
 
     val containerShape = RoundedCornerShape(containerShapeDp)
 
     val contentShapeDp = 30.dp
-    val contentShape = RoundedCornerShape(
-        topStart = contentShapeDp,
-        topEnd = contentShapeDp,
-        bottomStart = containerShapeDp,
-        bottomEnd = containerShapeDp
-    )
+    val contentShape = RoundedCornerShape(contentShapeDp)
 
     val containerColor = MaterialTheme.colorScheme.surface
     val backgroundColor = MaterialTheme.colorScheme.surfaceContainer
@@ -71,7 +69,7 @@ internal fun ChatListDrawer(
         DrawerTopRow(component)
         Box(
             Modifier
-                .fillMaxSize()
+                .weight(1f, fill = true)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outlineVariant,
@@ -85,6 +83,12 @@ internal fun ChatListDrawer(
         ) {
             ChatListDrawerContent(component)
         }
+        DrawerBottom(
+            url = "0.0.0.0:8080",
+            socketState = socketState,
+            onURLChange = {},
+            onConnectClick = {}
+        )
     }
 }
 
@@ -148,10 +152,11 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                     }
                 }
 
-                items(items = (state as ChatsState.OK).chats + ChatListItem(
-                    id = "123",
-                    title = "Привет! Подскажи, пожалуйста, как"
-                ), key = { it.id }) { chatInfo ->
+                items(
+                    items = (state as ChatsState.OK).chats + ChatListItem(
+                        id = "123",
+                        title = "Привет! Подскажи, пожалуйста, как"
+                    ), key = { it.id }) { chatInfo ->
                     DrawerListButton(
                         modifier = buttonModifier,
                         isSelected = (chatInfo.id == curId),
