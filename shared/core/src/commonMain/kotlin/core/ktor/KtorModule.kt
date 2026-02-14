@@ -9,7 +9,7 @@ import utils.api.SocketState
 
 internal val ktorModule = module {
     single<HttpClient> {
-        HttpClient(HttpEngineFactory().createEngine())
+        getHttpClient(HttpEngineFactory().createEngine())
     }
 
     single<MainSocket> {

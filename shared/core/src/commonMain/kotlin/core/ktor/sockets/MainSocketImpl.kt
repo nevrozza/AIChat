@@ -75,6 +75,10 @@ class MainSocketImpl(
         }
     }
 
+    override fun disconnect() {
+        sessionJob?.cancel()
+    }
+
     private suspend fun processFrame(wsFrame: WSFrame) {
         val requestId = wsFrame.id
         val event = wsFrame.event
@@ -90,6 +94,9 @@ class MainSocketImpl(
         } else {
             events.emit(event)
         }
+    }
+    init {
+        connect("0.0.0.0:8080")
     }
 
     @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)

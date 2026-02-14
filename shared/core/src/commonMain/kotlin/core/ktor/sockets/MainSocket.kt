@@ -11,6 +11,7 @@ interface MainSocket {
     val state: StateFlow<SocketState>
 
     fun connect(url: String)
+    fun disconnect()
 
     suspend fun send(event: Event): Event
     suspend fun fire(event: Event)
