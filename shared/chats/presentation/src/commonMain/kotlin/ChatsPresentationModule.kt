@@ -1,8 +1,8 @@
 import chats.mvi.ChatsContainer
 import org.koin.dsl.module
 
-val chatPresentationModule = module {
+val chatsPresentationModule = module {
     factory<() -> ChatsContainer> {
-        ::ChatsContainer
+        { ChatsContainer(get()) }
     }
 }

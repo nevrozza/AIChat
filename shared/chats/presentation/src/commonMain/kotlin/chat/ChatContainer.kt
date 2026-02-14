@@ -1,7 +1,8 @@
 package chat
 
 import chat.ChatState.MessageFeed
-import chats.mvi.ChatListItem
+import chats.entity.ChatListItem
+import chats.usecases.ChatUseCases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import presentation.AsyncDispatcher
@@ -17,6 +18,7 @@ private typealias Ctx = PipelineContext<ChatState, ChatIntent, Nothing>
 
 class ChatContainer(
     private val chatConfig: ChatListItem?,
+    private val chatUseCase: ChatUseCases,
     coroutineScope: CoroutineScope
 ) : Container<ChatState, ChatIntent, Nothing> {
 

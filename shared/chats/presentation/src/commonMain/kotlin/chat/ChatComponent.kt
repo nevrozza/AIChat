@@ -1,7 +1,9 @@
 package chat
 
-import chats.mvi.ChatListItem
+import chats.entity.ChatListItem
 import com.arkivanov.decompose.ComponentContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import presentation.componentCoroutineScope
 
 interface ChatComponent: ComponentContext {
@@ -14,6 +16,6 @@ class RealChatComponent(
     componentCtx: ComponentContext,
     chatConfig: ChatListItem?,
     override val onDrawerClick: () -> Unit
-) : ChatComponent, ComponentContext by componentCtx {
-    override val container = ChatContainer(chatConfig, componentCoroutineScope)
+) : ChatComponent, KoinComponent, ComponentContext by componentCtx {
+    override val container = ChatContainer(chatConfig, chatUseCase = get(), componentCoroutineScope)
 }

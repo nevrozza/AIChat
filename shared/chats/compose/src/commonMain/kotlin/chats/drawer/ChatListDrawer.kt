@@ -32,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import chats.ChatsComponent
 import chats.ChatsComponent.Config
-import chats.mvi.ChatListItem
+import chats.entity.ChatListItem
 import chats.mvi.ChatsIntent
 import chats.mvi.ChatsState
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -148,7 +148,10 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                     }
                 }
 
-                items(items = (state as ChatsState.OK).chats + ChatListItem(id = "123", title = "Привет! Подскажи, пожалуйста, как"), key = { it.id }) { chatInfo ->
+                items(items = (state as ChatsState.OK).chats + ChatListItem(
+                    id = "123",
+                    title = "Привет! Подскажи, пожалуйста, как"
+                ), key = { it.id }) { chatInfo ->
                     DrawerListButton(
                         modifier = buttonModifier,
                         isSelected = (chatInfo.id == curId),

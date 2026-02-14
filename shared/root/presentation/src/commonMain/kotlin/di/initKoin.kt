@@ -1,6 +1,7 @@
 package di
 
-import chatPresentationModule
+import chats.chatsDataModule
+import chatsPresentationModule
 import coreModule
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
@@ -13,8 +14,8 @@ fun initKoin(
         appDeclaration()
         modules(
             coreModule,
-            chatPresentationModule,
-//            chatDataModule,
+            chatsPresentationModule,
+            chatsDataModule
         )
     }
 }

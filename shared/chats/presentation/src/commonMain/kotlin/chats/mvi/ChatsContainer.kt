@@ -2,6 +2,7 @@ package chats.mvi
 
 
 import chats.mvi.ChatsAction.SelectChat
+import chats.usecases.ChatListUseCases
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
@@ -13,7 +14,9 @@ import pro.respawn.flowmvi.plugins.reduce
 
 private typealias Ctx = PipelineContext<ChatsState, ChatsIntent, ChatsAction>
 
-class ChatsContainer() : Container<ChatsState, ChatsIntent, ChatsAction> {
+class ChatsContainer(
+    private val chatListUseCases: ChatListUseCases
+) : Container<ChatsState, ChatsIntent, ChatsAction> {
 
     override val store = store(initial = ChatsState.Loading) {
         configure {

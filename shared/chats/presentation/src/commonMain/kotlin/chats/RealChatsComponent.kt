@@ -5,7 +5,7 @@ import chats.ChatsComponent.Child
 import chats.ChatsComponent.Child.ChatChild
 import chats.ChatsComponent.Config
 import chats.ChatsComponent.Config.Chat
-import chats.mvi.ChatListItem
+import chats.entity.ChatListItem
 import chats.mvi.ChatsAction
 import chats.mvi.ChatsAction.SelectChat
 import chats.mvi.ChatsContainer
