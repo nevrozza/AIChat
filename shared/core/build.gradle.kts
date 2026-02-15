@@ -10,6 +10,7 @@ kotlin {
             implementation(libs.bundles.core.ktor.client)
 
             api(projects.shared.utils.api)
+            implementation(projects.shared.chats.api)
             api(projects.shared.utils.common)
         }
 

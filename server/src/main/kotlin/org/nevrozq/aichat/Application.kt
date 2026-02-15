@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import org.nevrozq.aichat.features.allRoutes
 import org.nevrozq.aichat.plugins.configureCORS
 import org.nevrozq.aichat.plugins.configureKoog
+import org.nevrozq.aichat.plugins.configureNegotiation
 import org.nevrozq.aichat.plugins.configureWebSockets
 import kotlin.time.Duration.Companion.seconds
 
@@ -28,7 +29,7 @@ fun main() {
 
 fun Application.module() {
 
-
+    configureNegotiation()
     configureCORS()
     configureKoog()
     configureWebSockets()
@@ -59,8 +60,9 @@ fun Application.module() {
                 when (it) {
                     is StreamFrame.Append -> {
                         println("MEOW: ${it.text}")
-                        x+=it.text
+                        x += it.text
                     }
+
                     is StreamFrame.End -> {}
                     is StreamFrame.ToolCall -> {}
                 }

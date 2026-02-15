@@ -24,7 +24,7 @@ class ChatsContainer(
 ) : Container<ChatsState, ChatsIntent, ChatsAction> {
 
     override val store =
-        store(initial = ChatsState(url = "0.0.0.0:8080", content = ChatsContent.Loading)) {
+        store(initial = ChatsState(url = "ws://0.0.0.0:8080", content = ChatsContent.Loading)) {
             configure {
                 name = "Chats"
                 debuggable = true

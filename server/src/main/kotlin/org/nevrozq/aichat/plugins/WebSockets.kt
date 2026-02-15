@@ -7,7 +7,6 @@ import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.protobuf.ProtoBuf
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -18,6 +17,6 @@ fun Application.configureWebSockets() {
         timeout = 30.seconds
         maxFrameSize = Long.MAX_VALUE
         masking = false
-        contentConverter = KotlinxWebsocketSerializationConverter(ProtoBuf)
+        contentConverter = KotlinxWebsocketSerializationConverter(proto)
     }
 }

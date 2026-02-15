@@ -1,5 +1,6 @@
 package core.ktor.sockets
 
+import core.ktor.proto
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
@@ -18,7 +19,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import network.MainSocket
 import presentation.AsyncDispatcher
 import utils.api.Event
@@ -54,7 +54,7 @@ class MainSocketImpl(
                         session = this
                         for (frame in incoming) {
                             if (frame is Frame.Binary) {
-                                val wsFrame = ProtoBuf.decodeFromByteArray<WSFrame>(frame.data)
+                                val wsFrame = proto.decodeFromByteArray<WSFrame>(frame.data)
                                 processFrame(wsFrame)
                             }
                         }
@@ -70,7 +70,10 @@ class MainSocketImpl(
                     cleanup()
                 }
 
-                if (isActive) delay(5000) // перед рекконектом делэй
+                if (isActive) {
+                    delay(5000) // перед рекконектом делэй
+                    println("meow reconnect")
+                }
 
             }
         }
@@ -78,6 +81,7 @@ class MainSocketImpl(
 
     override fun disconnect() {
         sessionJob?.cancel()
+        state.value = SocketState.Disconnected(Exception("you clicked."))
     }
 
     private suspend fun processFrame(wsFrame: WSFrame) {
@@ -108,7 +112,7 @@ class MainSocketImpl(
 
         return try {
             val frame = WSFrame(id = requestId, event = event)
-            val bytes = ProtoBuf.encodeToByteArray(WSFrame.serializer(), frame)
+            val bytes = proto.encodeToByteArray(WSFrame.serializer(), frame)
 
             val currentSession = session ?: throw IllegalStateException("Socket not connected")
             currentSession.send(Frame.Binary(true, bytes))
@@ -125,7 +129,7 @@ class MainSocketImpl(
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun fire(event: Event) {
         val frame = WSFrame(id = null, event = event)
-        val bytes = ProtoBuf.encodeToByteArray(WSFrame.serializer(), frame)
+        val bytes = proto.encodeToByteArray(WSFrame.serializer(), frame)
         session?.send(Frame.Binary(true, bytes)) ?: throw IllegalStateException("Not connected")
     }
 

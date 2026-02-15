@@ -9,7 +9,7 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
+import org.nevrozq.aichat.plugins.proto
 import org.nevrozq.aichat.utils.sendWSResponse
 import utils.api.Event
 import utils.api.WSFrame
@@ -30,7 +30,7 @@ fun Route.chatRoutes() {
             for (frame in incoming) {
                 if (frame is Frame.Binary) {
 
-                    val inWSFrame = ProtoBuf.decodeFromByteArray<WSFrame>(frame.data)
+                    val inWSFrame = proto.decodeFromByteArray<WSFrame>(frame.data)
 
                     try {
                         when (val event = inWSFrame.event) {

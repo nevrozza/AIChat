@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -99,7 +100,8 @@ internal fun DrawerBottom(
                         innerTextField()
                     }
                 },
-                modifier = Modifier.weight(1f, true).padding(start = 20.dp, end = 10.dp)
+                modifier = Modifier.weight(1f, true).padding(start = 20.dp, end = 10.dp),
+                singleLine = true
             )
 
             val isNotConnected =
@@ -139,9 +141,11 @@ internal fun DrawerBottom(
         AnimatedVisibility(
             showErrorLog && socketState is SocketState.Disconnected
         ) {
-            Box(Modifier.animateContentSize()) {
-                if (socketState is SocketState.Disconnected) {
-                    Text(socketState.cause?.message ?: "unknown error")
+            SelectionContainer {
+                Box(Modifier.animateContentSize()) {
+                    if (socketState is SocketState.Disconnected) {
+                        Text(socketState.cause?.message ?: "unknown error")
+                    }
                 }
             }
         }
