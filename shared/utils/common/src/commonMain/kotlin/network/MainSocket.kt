@@ -1,4 +1,4 @@
-package core.ktor.sockets
+package network
 
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow

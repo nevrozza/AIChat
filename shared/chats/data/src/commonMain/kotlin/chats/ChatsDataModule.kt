@@ -7,6 +7,7 @@ import chats.repositories.ChatRepository
 import chats.repositories.ChatRepositoryImpl
 import chats.usecases.ChatListUseCases
 import chats.usecases.ChatUseCases
+import chats.usecases.ConnectToChatsWSUseCases
 import org.koin.dsl.module
 
 val chatsDataModule = module {
@@ -20,5 +21,9 @@ val chatsDataModule = module {
     }
     factory<ChatListUseCases> {
         ChatListUseCases(get())
+    }
+
+    factory<ConnectToChatsWSUseCases> {
+        ConnectToChatsWSUseCases(get())
     }
 }

@@ -19,6 +19,7 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
+import network.MainSocket
 import presentation.AsyncDispatcher
 import utils.api.Event
 import utils.api.ServerException
@@ -94,9 +95,6 @@ class MainSocketImpl(
         } else {
             events.emit(event)
         }
-    }
-    init {
-        connect("0.0.0.0:8080")
     }
 
     @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)

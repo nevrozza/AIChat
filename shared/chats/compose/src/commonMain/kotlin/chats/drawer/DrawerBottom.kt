@@ -47,7 +47,8 @@ internal fun DrawerBottom(
     url: String,
     socketState: SocketState,
     onURLChange: (String) -> Unit,
-    onConnectClick: () -> Unit
+    onConnectClick: () -> Unit,
+    onDisconnectClick: () -> Unit
 ) {
     val textStyle = LocalTextStyle.current
     val colors = ChatBottomBarDefaults.TextFieldColors
@@ -101,9 +102,15 @@ internal fun DrawerBottom(
                 modifier = Modifier.weight(1f, true).padding(start = 20.dp, end = 10.dp)
             )
 
-            Button(onClick = onConnectClick, modifier = Modifier.fillMaxHeight()) {
+            val isNotConnected =
+                socketState is SocketState.Idle || socketState is SocketState.Disconnected
+
+            Button(
+                onClick = if (isNotConnected) onConnectClick else onDisconnectClick,
+                modifier = Modifier.fillMaxHeight()
+            ) {
                 AnimatedContent(
-                    if (socketState is SocketState.Idle || socketState is SocketState.Disconnected) Res.drawable.power
+                    if (isNotConnected) Res.drawable.power
                     else Res.drawable.power_off
                 ) { resource ->
                     Icon(

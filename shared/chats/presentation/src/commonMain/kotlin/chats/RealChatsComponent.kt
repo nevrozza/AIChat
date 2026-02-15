@@ -11,6 +11,7 @@ import chats.mvi.ChatsAction.SelectChat
 import chats.mvi.ChatsContainer
 import chats.mvi.ChatsIntent
 import chats.mvi.ChatsState
+import chats.mvi.ChatsState.*
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -51,7 +52,7 @@ class RealChatsComponent(
         childFactory = { config, childCtx ->
             @OptIn(DelicateStoreApi::class)
             val chatConfig: ChatListItem? = (config as? Chat)?.id?.let {
-                (this.state as? ChatsState.OK)?.chats?.firstOrNull { it.id == config.id }
+                (this.state.content as? ChatsContent.OK)?.chats?.firstOrNull { it.id == config.id }
             }
             ChatChild(
                 RealChatComponent(

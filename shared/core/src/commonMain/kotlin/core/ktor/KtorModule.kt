@@ -1,6 +1,6 @@
 package core.ktor
 
-import core.ktor.sockets.MainSocket
+import network.MainSocket
 import core.ktor.sockets.MainSocketImpl
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.StateFlow

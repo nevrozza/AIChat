@@ -3,6 +3,6 @@ import org.koin.dsl.module
 
 val chatsPresentationModule = module {
     factory<() -> ChatsContainer> {
-        { ChatsContainer(get()) }
+        { ChatsContainer(get(), get()) }
     }
 }

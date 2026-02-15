@@ -5,7 +5,7 @@ import chats.ChatListServerEvent
 import chats.dtos.ChatInfoDTO
 import chats.repositories.ChatListNetworkRepository
 import chats.repositories.ChatNetworkRepository
-import core.ktor.sockets.MainSocket
+import network.MainSocket
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

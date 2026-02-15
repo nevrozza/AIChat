@@ -35,7 +35,7 @@ import chats.ChatsComponent
 import chats.ChatsComponent.Config
 import chats.entity.ChatListItem
 import chats.mvi.ChatsIntent
-import chats.mvi.ChatsState
+import chats.mvi.ChatsState.ChatsContent
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import org.jetbrains.compose.resources.painterResource
 import pro.respawn.flowmvi.essenty.compose.subscribe
@@ -44,6 +44,8 @@ import pro.respawn.flowmvi.essenty.compose.subscribe
 internal fun ChatListDrawer(
     component: ChatsComponent,
 ) {
+    val state by component.subscribe(component)
+
     val socketState by component.socketState.collectAsState()
 
     val containerShapeDp = 40.dp
@@ -84,10 +86,11 @@ internal fun ChatListDrawer(
             ChatListDrawerContent(component)
         }
         DrawerBottom(
-            url = "0.0.0.0:8080",
+            url = state.url,
             socketState = socketState,
-            onURLChange = {},
-            onConnectClick = {}
+            onURLChange = { component.intent(ChatsIntent.ChangeServerUrl(it)) },
+            onConnectClick = { component.intent(ChatsIntent.ClickedConnect) },
+            onDisconnectClick = { component.intent(ChatsIntent.ClickedDisconnect) }
         )
     }
 }
@@ -96,8 +99,8 @@ internal fun ChatListDrawer(
 private fun ChatListDrawerContent(component: ChatsComponent) {
     val state by component.subscribe(component)
 
-    when (state) {
-        is ChatsState.Error -> {
+    when (state.content) {
+        is ChatsContent.Error -> {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,7 +114,7 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                 ) { Text("Попробовать ещё раз") }
 
                 Text(
-                    (state as ChatsState.Error).e?.message ?: "Unknown error",
+                    (state.content as ChatsContent.Error).e?.message ?: "Unknown error",
                     textAlign = TextAlign.Center
                 )
                 TextButton(onClick = { TODO() }) {
@@ -120,13 +123,13 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
             }
         }
 
-        ChatsState.Loading -> {
+        ChatsContent.Loading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
 
-        is ChatsState.OK -> {
+        is ChatsContent.OK -> {
             val verticalPadding = 15.dp
             val buttonModifier = Modifier.fillMaxWidth()
 
@@ -153,7 +156,7 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                 }
 
                 items(
-                    items = (state as ChatsState.OK).chats + ChatListItem(
+                    items = (state.content as ChatsContent.OK).chats + ChatListItem(
                         id = "123",
                         title = "Привет! Подскажи, пожалуйста, как"
                     ), key = { it.id }) { chatInfo ->
