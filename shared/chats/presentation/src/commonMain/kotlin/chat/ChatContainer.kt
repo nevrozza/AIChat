@@ -11,9 +11,12 @@ import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
 import pro.respawn.flowmvi.dsl.updateStateImmediate
+import pro.respawn.flowmvi.plugins.enableLogging
 import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.recover
 import pro.respawn.flowmvi.plugins.reduce
+import pro.respawn.flowmvi.plugins.whileSubscribed
+import kotlin.time.Duration.Companion.seconds
 
 private typealias Ctx = PipelineContext<ChatState, ChatIntent, Nothing>
 
@@ -32,6 +35,12 @@ class ChatContainer(
         ),
         scope = coroutineScope
     ) {
+        configure {
+            name = "ChatDialog"
+            debuggable = true
+        }
+        enableLogging()
+
         if (chatConfig != null) {
             recover {
                 updateState { copy(messageFeed = MessageFeed.LoadingError(it)) }
@@ -57,6 +66,11 @@ class ChatContainer(
             }
             null
         }
+
+        whileSubscribed(stopDelay = 0.seconds) {
+            // subscribe on ws messages
+        }
+
         reduce { intent ->
             when (intent) {
                 ChatIntent.SentMessage -> withState { sendMessage(this.inputText) }
@@ -88,18 +102,18 @@ class ChatContainer(
 
             if (itWasNew) {
                 val id = chatUseCases.createChat(sentText)
-                launch(Dispatchers.Main) {
+                launch(Dispatchers.Main) { // triggers decompose navigation
                     onChatCreate(
                         id,
                         sentText
                     )
-                } // triggers decompose navigation
+                }
                 updateState {
                     this.copy(inputText = "", messageFeed = MessageFeed.NewChat)
                 }
                 return@withState
             } else {
-                // sendMessage and subscribe for answer
+                // sendMessage
             }
         }
     }

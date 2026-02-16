@@ -16,7 +16,7 @@ import utils.api.WSFrame
 
 @OptIn(ExperimentalSerializationApi::class)
 fun Route.chatRoutes() {
-    val chatService = ChatsService() // TODO: DI
+    val chatService: ChatsService = ChatsServiceImpl() // TODO: DI
 
     webSocket("/chat") {
 

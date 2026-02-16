@@ -20,6 +20,7 @@ import chat.content.LoadingContent
 import chat.content.LoadingErrorContent
 import chat.content.NewChatContent
 import chat.content.showDialog.ShowDialogContent
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import flowMVI.TypeCrossfade
 import pro.respawn.flowmvi.dsl.intent
 import pro.respawn.flowmvi.essenty.compose.subscribe
@@ -30,7 +31,10 @@ internal fun ChatScreen(
 ) {
 
     val container = component.container
-    val state by container.store.subscribe(component)
+    val state by container.store.subscribe(
+        lifecycleOwner = component,
+        lifecycleState = Lifecycle.State.RESUMED
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize()

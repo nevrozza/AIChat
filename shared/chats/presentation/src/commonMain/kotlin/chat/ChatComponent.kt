@@ -2,11 +2,12 @@ package chat
 
 import chats.entity.ChatListItem
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import presentation.componentCoroutineScope
 
-interface ChatComponent : ComponentContext {
+interface ChatComponent : ComponentContext, LifecycleOwner {
     val container: ChatContainer
 
     val onDrawerClick: () -> Unit

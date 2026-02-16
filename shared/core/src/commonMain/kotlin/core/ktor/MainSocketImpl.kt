@@ -1,6 +1,5 @@
-package core.ktor.sockets
+package core.ktor
 
-import core.ktor.proto
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
