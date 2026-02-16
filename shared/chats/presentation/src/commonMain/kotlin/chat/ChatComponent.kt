@@ -5,17 +5,33 @@ import com.arkivanov.decompose.ComponentContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import presentation.componentCoroutineScope
+import kotlin.time.Clock
 
-interface ChatComponent: ComponentContext {
+interface ChatComponent : ComponentContext {
     val container: ChatContainer
 
     val onDrawerClick: () -> Unit
+
+    val navigateToEmptyNewChat: () -> Unit
 }
 
 class RealChatComponent(
     componentCtx: ComponentContext,
     chatConfig: ChatListItem?,
-    override val onDrawerClick: () -> Unit
+    initialMessage: String?,
+    onChatCreate: (String, String) -> Unit,
+    override val onDrawerClick: () -> Unit,
+    override val navigateToEmptyNewChat: () -> Unit
 ) : ChatComponent, KoinComponent, ComponentContext by componentCtx {
-    override val container = ChatContainer(chatConfig, chatUseCase = get(), componentCoroutineScope)
+    override val container = ChatContainer(
+        chatConfig = chatConfig,
+        chatUseCases = get(),
+        onChatCreate = onChatCreate,
+        initialMessage = initialMessage,
+        coroutineScope = componentCoroutineScope
+    )
+
+    init {
+        println("component: ${Clock.System.now()}")
+    }
 }

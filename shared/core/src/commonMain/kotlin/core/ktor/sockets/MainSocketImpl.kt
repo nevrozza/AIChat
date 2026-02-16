@@ -102,7 +102,7 @@ class MainSocketImpl(
     }
 
     @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
-    override suspend fun send(event: Event): Event {
+    override suspend fun sendRaw(event: Event): Event {
         val requestId = Uuid.random().toString()
         val deferred = CompletableDeferred<Event>()
 

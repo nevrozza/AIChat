@@ -28,7 +28,7 @@ interface ChatsComponent : DefaultStack<Config, Child>,
     @Serializable
     sealed interface Config {
         @Serializable
-        data class Chat(val id: String?) : Config
+        data class Chat(val id: String?, val message: String?) : Config
     }
 
     sealed interface UIEvent {

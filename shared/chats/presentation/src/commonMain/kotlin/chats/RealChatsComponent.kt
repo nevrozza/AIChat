@@ -11,7 +11,7 @@ import chats.mvi.ChatsAction.SelectChat
 import chats.mvi.ChatsContainer
 import chats.mvi.ChatsIntent
 import chats.mvi.ChatsState
-import chats.mvi.ChatsState.*
+import chats.mvi.ChatsState.ChatsContent
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -48,33 +48,53 @@ class RealChatsComponent(
     private val _stack = childStack(
         source = nav,
         serializer = Config.serializer(),
-        initialConfiguration = Chat(null),
+        initialConfiguration = Chat(null, message = null),
         childFactory = { config, childCtx ->
-            @OptIn(DelicateStoreApi::class)
-            val chatConfig: ChatListItem? = (config as? Chat)?.id?.let {
-                (this.state.content as? ChatsContent.OK)?.chats?.firstOrNull { it.id == config.id }
-            }
-            ChatChild(
-                RealChatComponent(
-                    childCtx,
-                    chatConfig = chatConfig
-                ) {
-                    intent(ChatsIntent.SetDrawerOpened(true))
+
+            val cfg = config as? Chat
+            if (cfg != null) {
+                @OptIn(DelicateStoreApi::class)
+                val chatConfig: ChatListItem? = cfg.id?.let {
+                    if (cfg.message == null) {
+                        (this.state.content as? ChatsContent.OK)?.chats?.firstOrNull { it.id == config.id }
+                    } else {
+                        ChatListItem(id = cfg.id, title = cfg.message)
+                    }
                 }
-            )
+                val child = ChatChild(
+                    RealChatComponent(
+                        childCtx,
+                        chatConfig = chatConfig,
+                        onChatCreate = { id, message ->
+                            navigateToChat(chatId = id, newSendMessage = message)
+                        },
+                        initialMessage = cfg.message,
+                        onDrawerClick = { intent(ChatsIntent.SetDrawerOpened(true)) },
+                        navigateToEmptyNewChat = { navigateToChat(null, null) }
+                    )
+                )
+                // child.component.container.intent() TODO: update messages?
+
+                child
+            } else {
+                throw IllegalStateException()
+            }
         },
         handleBackButton = true
     )
+
+    private fun navigateToChat(chatId: String?, newSendMessage: String?) {
+        nav.pushToFront(Chat(chatId, message = newSendMessage))
+    }
 
     override val stack: Value<ChildStack<Config, Child>>
         get() = _stack
 
     init {
         subscribe {
-            println("smth")
             actions.collect { action ->
                 when (action) {
-                    is SelectChat -> nav.pushToFront(Chat(action.id))
+                    is SelectChat -> navigateToChat(action.id, newSendMessage = null)
                     is ChatsAction.SetDrawerOpened ->
                         uiEvents.emit(ChatsComponent.UIEvent.SetDrawerOpened(action.isOpened))
 
@@ -82,5 +102,6 @@ class RealChatsComponent(
             }
         }
     }
+
 
 }

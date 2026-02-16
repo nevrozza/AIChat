@@ -8,6 +8,7 @@ import chats.usecases.ChatListUseCases
 import chats.usecases.ConnectToChatsWSUseCases
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import presentation.AsyncDispatcher
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
@@ -55,7 +56,7 @@ class ChatsContainer(
             }
         }
 
-    private fun Ctx.loadChatsList() = launch {
+    private fun Ctx.loadChatsList() = launch(AsyncDispatcher) {
         updateState {
             if (this.content !is ChatsContent.OK) {
                 this.copy(content = ChatsContent.Loading)
@@ -64,7 +65,7 @@ class ChatsContainer(
 
         chatListUseCases.getChatList().collectLatest { chatsList ->
             updateState {
-                this.copy(content = ChatsContent.OK(chats = chatsList))
+                this.copy(content = ChatsContent.OK(chats = chatsList.asReversed()))
             }
         }
     }

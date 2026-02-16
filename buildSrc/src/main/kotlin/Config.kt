@@ -28,4 +28,8 @@ object Config {
             return "$sharedNamespace$formattedModuleName"
         }
     }
+
+    object Java {
+        const val jdkVersion = 21
+    }
 }

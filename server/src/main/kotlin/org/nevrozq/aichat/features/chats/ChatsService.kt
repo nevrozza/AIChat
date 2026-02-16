@@ -10,10 +10,11 @@ import java.util.UUID
 class ChatsService : ChatListNetworkRepository, ChatNetworkRepository {
     override val chats: MutableStateFlow<List<ChatInfoDTO>> = MutableStateFlow(emptyList())
 
-    override suspend fun createChat(name: String) {
+    override suspend fun createChat(name: String): String {
         val newChat = ChatInfoDTO(id = UUID.randomUUID().toString(), title = name)
         chats.update { currentList ->
             currentList + newChat
         }
+        return newChat.id
     }
 }

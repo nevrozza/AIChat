@@ -4,6 +4,7 @@ import chat.ChatState.MessageFeed
 import chats.entity.ChatListItem
 import chats.usecases.ChatUseCases
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import presentation.AsyncDispatcher
 import pro.respawn.flowmvi.api.Container
@@ -13,22 +14,29 @@ import pro.respawn.flowmvi.dsl.updateStateImmediate
 import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.recover
 import pro.respawn.flowmvi.plugins.reduce
+import kotlin.time.Clock
 
 private typealias Ctx = PipelineContext<ChatState, ChatIntent, Nothing>
 
 class ChatContainer(
     private val chatConfig: ChatListItem?,
-    private val chatUseCase: ChatUseCases,
+    private val initialMessage: String?,
+    private val chatUseCases: ChatUseCases,
+    private val onChatCreate: (String, String) -> Unit,
     coroutineScope: CoroutineScope
 ) : Container<ChatState, ChatIntent, Nothing> {
 
     override val store = store(
         initial = ChatState(
             chatTitle = chatConfig?.title ?: "Новый чат",
-            messageFeed = if (chatConfig == null) MessageFeed.NewChat else MessageFeed.Loading
+            messageFeed = if (initialMessage != null) MessageFeed.ShowDialog() else if (chatConfig == null) MessageFeed.NewChat else MessageFeed.Loading
         ),
         scope = coroutineScope
     ) {
+        init {
+            println(Clock.System.now())
+        }
+
         if (chatConfig != null) {
             recover {
                 updateState { copy(messageFeed = MessageFeed.LoadingError(it)) }
@@ -38,12 +46,17 @@ class ChatContainer(
                 loadChat()
             }
         }
+        if (initialMessage != null) {
+            init {
+                sendMessage(initialMessage)
+            }
+        }
+
         recover {
             updateState {
                 if (messageFeed is MessageFeed.ShowDialog) {
                     copy(messageFeed = messageFeed.copy(error = it))
                 } else {
-                    println("meow")
                     this
                 }
             }
@@ -51,7 +64,7 @@ class ChatContainer(
         }
         reduce { intent ->
             when (intent) {
-                ChatIntent.SentMessage -> TODO()
+                ChatIntent.SentMessage -> withState { sendMessage(this.inputText) }
                 is ChatIntent.TypedMessage -> updateStateImmediate {
                     copy(inputText = intent.text)
                 }
@@ -59,6 +72,41 @@ class ChatContainer(
 
         }
 
+    }
+
+    private fun Ctx.sendMessage(sentText: String) = launch(AsyncDispatcher) {
+        withState {
+            val currentMessages = ((this.messageFeed as? MessageFeed.ShowDialog)?.messages
+                ?: listOf())
+            val itWasNew =
+                this.messageFeed is MessageFeed.NewChat
+
+            updateState {
+                this.copy(
+                    inputText = "",
+                    messageFeed = MessageFeed.ShowDialog(
+                        messages = currentMessages + ChatMessage(sentText, true),
+                        isSending = true
+                    )
+                )
+            }
+
+            if (itWasNew) {
+                val id = chatUseCases.createChat(sentText)
+                launch(Dispatchers.Main) {
+                    onChatCreate(
+                        id,
+                        sentText
+                    )
+                } // triggers decompose navigation
+                updateState {
+                    this.copy(inputText = "", messageFeed = MessageFeed.NewChat)
+                }
+                return@withState
+            } else {
+                // sendMessage and subscribe for answer
+            }
+        }
     }
 
     private fun Ctx.loadChat() = launch(AsyncDispatcher) {

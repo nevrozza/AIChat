@@ -47,7 +47,7 @@ internal fun ChatScreen(
                 modifier = Modifier.fillMaxWidth().padding(top = calculateTopPadding()),
                 title = state.chatTitle,
                 onDrawerClick = component.onDrawerClick,
-                onNewChatClick = { },
+                onNewChatClick = component.navigateToEmptyNewChat,
                 isNewChatButtonVisible = state.messageFeed !is MessageFeed.NewChat
             )
         }

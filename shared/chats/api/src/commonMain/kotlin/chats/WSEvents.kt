@@ -1,9 +1,9 @@
 package chats
 
-import chats.ChatClientEvent.*
-import chats.ChatListServerEvent.*
+import chats.ChatClientEvent.CreateChat
+import chats.ChatListServerEvent.UpdateChatList
+import chats.ChatServerEvent.ChatCreated
 import chats.dtos.ChatInfoDTO
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -18,13 +18,14 @@ val chatsSerializersModule = SerializersModule {
         subclass(UpdateChatList::class)
 
         subclass(CreateChat::class)
+
+        subclass(ChatCreated::class)
     }
 }
 
 @Serializable
 sealed interface ChatListServerEvent : ServerEvent {
     @Serializable
-    @SerialName("UpdateChatList")
     data class UpdateChatList(val chatsInfo: List<ChatInfoDTO>) : ChatListServerEvent
 }
 
@@ -32,4 +33,10 @@ sealed interface ChatListServerEvent : ServerEvent {
 sealed interface ChatClientEvent : ClientEvent {
     @Serializable
     data class CreateChat(val title: String) : ChatClientEvent
+}
+
+@Serializable
+sealed interface ChatServerEvent : ServerEvent {
+    @Serializable
+    data class ChatCreated(val id: String) : ChatServerEvent
 }

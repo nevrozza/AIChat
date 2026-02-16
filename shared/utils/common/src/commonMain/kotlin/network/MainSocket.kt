@@ -13,6 +13,12 @@ interface MainSocket {
     fun connect(url: String)
     fun disconnect()
 
-    suspend fun send(event: Event): Event
+    suspend fun sendRaw(event: Event): Event
     suspend fun fire(event: Event)
+}
+
+suspend inline fun <reified T : Event> MainSocket.send(event: Event): T {
+    val result = sendRaw(event)
+    return result as? T
+        ?: throw IllegalStateException("Expected ${T::class}, but got ${result::class}")
 }
