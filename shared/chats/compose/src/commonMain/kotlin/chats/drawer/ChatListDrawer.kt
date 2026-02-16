@@ -33,8 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import chats.ChatsComponent
 import chats.ChatsComponent.Config
-import chats.entity.ChatListItem
 import chats.mvi.ChatsIntent
+import chats.mvi.ChatsIntent.SelectedChat
 import chats.mvi.ChatsState.ChatsContent
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import org.jetbrains.compose.resources.painterResource
@@ -102,7 +102,7 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
     when (state.content) {
         is ChatsContent.Error -> {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -150,22 +150,19 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                         icon = painterResource(Res.drawable.edit_square)
                     ) {
                         component.intent(
-                            ChatsIntent.SelectedChat(null)
+                            SelectedChat(null)
                         )
                     }
                 }
 
                 items(
-                    items = (state.content as ChatsContent.OK).chats + ChatListItem(
-                        id = "123",
-                        title = "Привет! Подскажи, пожалуйста, как"
-                    ), key = { it.id }) { chatInfo ->
+                    items = (state.content as ChatsContent.OK).chats, key = { it.id }) { chatInfo ->
                     DrawerListButton(
                         modifier = buttonModifier,
                         isSelected = (chatInfo.id == curId),
                         text = chatInfo.title,
                         icon = null
-                    ) { component.intent(ChatsIntent.SelectedChat(chatInfo.id)) }
+                    ) { component.intent(SelectedChat(chatInfo.id)) }
                 }
 
 
@@ -173,6 +170,10 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                     Spacer(Modifier.height(verticalPadding))
                 }
             }
+        }
+
+        ChatsContent.Idle -> Box(Modifier.fillMaxSize().padding(horizontal = 15.dp), contentAlignment = Alignment.Center) {
+            Text("Подключись к серверу")
         }
     }
 }

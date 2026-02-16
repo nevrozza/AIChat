@@ -11,6 +11,7 @@ data class ChatsState(
     val content: ChatsContent
 ) : MVIState {
     sealed interface ChatsContent : MVIState {
+        data object Idle: ChatsContent
         data object Loading : ChatsContent
         data class Error(val e: Exception?) : ChatsContent
         data class OK(val chats: List<ChatListItem>) : ChatsContent
