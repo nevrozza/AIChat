@@ -5,7 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import presentation.componentCoroutineScope
-import kotlin.time.Clock
 
 interface ChatComponent : ComponentContext {
     val container: ChatContainer
@@ -30,8 +29,4 @@ class RealChatComponent(
         initialMessage = initialMessage,
         coroutineScope = componentCoroutineScope
     )
-
-    init {
-        println("component: ${Clock.System.now()}")
-    }
 }

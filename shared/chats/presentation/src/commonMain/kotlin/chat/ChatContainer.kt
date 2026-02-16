@@ -14,7 +14,6 @@ import pro.respawn.flowmvi.dsl.updateStateImmediate
 import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.recover
 import pro.respawn.flowmvi.plugins.reduce
-import kotlin.time.Clock
 
 private typealias Ctx = PipelineContext<ChatState, ChatIntent, Nothing>
 
@@ -33,10 +32,6 @@ class ChatContainer(
         ),
         scope = coroutineScope
     ) {
-        init {
-            println(Clock.System.now())
-        }
-
         if (chatConfig != null) {
             recover {
                 updateState { copy(messageFeed = MessageFeed.LoadingError(it)) }
