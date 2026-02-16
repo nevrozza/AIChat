@@ -6,6 +6,7 @@ import chats.ChatServerEvent.ChatHistoryUpdate
 import chats.ChatServerEvent.NewMessage
 import chats.dtos.ChatMessageDTO
 import io.ktor.server.websocket.DefaultWebSocketServerSession
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.nevrozq.aichat.utils.sendWSResponse
@@ -14,7 +15,8 @@ import java.util.UUID
 suspend fun DefaultWebSocketServerSession.handleChatEvent(
     event: ChatClientEvent,
     requestId: String?,
-    chatsService: ChatsService
+    chatsService: ChatsService,
+    onNewSubscribtion: (Job) -> Unit
 ) {
     when (event) {
         is ChatClientEvent.CreateChat -> {
@@ -38,13 +40,15 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
             val history = chatsService.getHistory(event.chatId)
             sendWSResponse(requestId, ChatHistoryUpdate(event.chatId, history))
 
-            launch {
-                chatsService.messageBus.collect { msg ->
-                    if (msg.chatId == event.chatId) {
-                        sendWSResponse(null, NewMessage(msg))
+            onNewSubscribtion(
+                launch {
+                    chatsService.messageBus.collect { msg ->
+                        if (msg.chatId == event.chatId) {
+                            sendWSResponse(null, NewMessage(msg))
+                        }
                     }
                 }
-            }
+            )
         }
     }
 }

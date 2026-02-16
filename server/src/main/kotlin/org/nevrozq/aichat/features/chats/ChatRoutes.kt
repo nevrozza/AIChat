@@ -5,6 +5,7 @@ import chats.ChatListServerEvent
 import io.ktor.server.routing.Route
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -19,6 +20,8 @@ fun Route.chatRoutes() {
     val chatService: ChatsService = ChatsServiceImpl() // TODO: DI
 
     webSocket("/chat") {
+        var subscriptionJob: Job? = null
+
 
         val job = launch {
             chatService.chats.collect { chatsInfo ->
@@ -34,7 +37,13 @@ fun Route.chatRoutes() {
 
                     try {
                         when (val event = inWSFrame.event) {
-                            is ChatClientEvent -> handleChatEvent(event, inWSFrame.id, chatService)
+                            is ChatClientEvent -> handleChatEvent(
+                                event, inWSFrame.id, chatService,
+                                onNewSubscribtion = { newJob ->
+                                    subscriptionJob?.cancel()
+                                    subscriptionJob = newJob
+                                }
+                            )
                         }
                     } catch (e: Exception) {
                         sendWSResponse(inWSFrame.id, Event.Error(e.message ?: "Unknown error"))
@@ -49,6 +58,7 @@ fun Route.chatRoutes() {
         } finally {
             println("WS Closed")
             job.cancel()
+            subscriptionJob?.cancel()
         }
     }
 }
