@@ -9,12 +9,16 @@ import chats.mvi.ChatsIntent
 import chats.mvi.ChatsState
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import pro.respawn.flowmvi.api.Store
+import utils.api.SocketState
 
-interface ChatsComponent: DefaultStack<Config, Child>,
+interface ChatsComponent : DefaultStack<Config, Child>,
     Store<ChatsState, ChatsIntent, ChatsAction>, ComponentContext {
 
+
+    val socketState: StateFlow<SocketState>
     val uiEvents: Flow<UIEvent>
 
     sealed interface Child {

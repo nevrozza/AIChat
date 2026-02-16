@@ -15,8 +15,10 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.send
 import kotlinx.coroutines.delay
+import org.nevrozq.aichat.features.allRoutes
 import org.nevrozq.aichat.plugins.configureCORS
 import org.nevrozq.aichat.plugins.configureKoog
+import org.nevrozq.aichat.plugins.configureNegotiation
 import org.nevrozq.aichat.plugins.configureWebSockets
 import kotlin.time.Duration.Companion.seconds
 
@@ -27,10 +29,12 @@ fun main() {
 
 fun Application.module() {
 
-
+    configureNegotiation()
     configureCORS()
     configureKoog()
     configureWebSockets()
+
+    allRoutes()
 
 
     routing {
@@ -56,8 +60,9 @@ fun Application.module() {
                 when (it) {
                     is StreamFrame.Append -> {
                         println("MEOW: ${it.text}")
-                        x+=it.text
+                        x += it.text
                     }
+
                     is StreamFrame.End -> {}
                     is StreamFrame.ToolCall -> {}
                 }

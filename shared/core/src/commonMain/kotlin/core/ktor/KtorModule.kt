@@ -1,0 +1,22 @@
+package core.ktor
+
+import network.MainSocket
+import core.ktor.sockets.MainSocketImpl
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.dsl.module
+import utils.api.SocketState
+
+internal val ktorModule = module {
+    single<HttpClient> {
+        getHttpClient(HttpEngineFactory().createEngine())
+    }
+
+    single<MainSocket> {
+        MainSocketImpl(get())
+    }
+
+    single<StateFlow<SocketState>> {
+        get<MainSocket>().state
+    }
+}

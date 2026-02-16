@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,9 +33,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import chats.ChatsComponent
 import chats.ChatsComponent.Config
-import chats.mvi.ChatListItem
 import chats.mvi.ChatsIntent
-import chats.mvi.ChatsState
+import chats.mvi.ChatsIntent.SelectedChat
+import chats.mvi.ChatsState.ChatsContent
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import org.jetbrains.compose.resources.painterResource
 import pro.respawn.flowmvi.essenty.compose.subscribe
@@ -43,17 +44,16 @@ import pro.respawn.flowmvi.essenty.compose.subscribe
 internal fun ChatListDrawer(
     component: ChatsComponent,
 ) {
+    val state by component.subscribe(component)
+
+    val socketState by component.socketState.collectAsState()
+
     val containerShapeDp = 40.dp
 
     val containerShape = RoundedCornerShape(containerShapeDp)
 
     val contentShapeDp = 30.dp
-    val contentShape = RoundedCornerShape(
-        topStart = contentShapeDp,
-        topEnd = contentShapeDp,
-        bottomStart = containerShapeDp,
-        bottomEnd = containerShapeDp
-    )
+    val contentShape = RoundedCornerShape(contentShapeDp)
 
     val containerColor = MaterialTheme.colorScheme.surface
     val backgroundColor = MaterialTheme.colorScheme.surfaceContainer
@@ -71,7 +71,7 @@ internal fun ChatListDrawer(
         DrawerTopRow(component)
         Box(
             Modifier
-                .fillMaxSize()
+                .weight(1f, fill = true)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outlineVariant,
@@ -85,6 +85,13 @@ internal fun ChatListDrawer(
         ) {
             ChatListDrawerContent(component)
         }
+        DrawerBottom(
+            url = state.url,
+            socketState = socketState,
+            onURLChange = { component.intent(ChatsIntent.ChangeServerUrl(it)) },
+            onConnectClick = { component.intent(ChatsIntent.ClickedConnect) },
+            onDisconnectClick = { component.intent(ChatsIntent.ClickedDisconnect) }
+        )
     }
 }
 
@@ -92,10 +99,10 @@ internal fun ChatListDrawer(
 private fun ChatListDrawerContent(component: ChatsComponent) {
     val state by component.subscribe(component)
 
-    when (state) {
-        is ChatsState.Error -> {
+    when (state.content) {
+        is ChatsContent.Error -> {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -107,7 +114,7 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                 ) { Text("Попробовать ещё раз") }
 
                 Text(
-                    (state as ChatsState.Error).e?.message ?: "Unknown error",
+                    (state.content as ChatsContent.Error).e?.message ?: "Unknown error",
                     textAlign = TextAlign.Center
                 )
                 TextButton(onClick = { TODO() }) {
@@ -116,13 +123,13 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
             }
         }
 
-        ChatsState.Loading -> {
+        ChatsContent.Loading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
 
-        is ChatsState.OK -> {
+        is ChatsContent.OK -> {
             val verticalPadding = 15.dp
             val buttonModifier = Modifier.fillMaxWidth()
 
@@ -143,18 +150,19 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                         icon = painterResource(Res.drawable.edit_square)
                     ) {
                         component.intent(
-                            ChatsIntent.SelectedChat(null)
+                            SelectedChat(null)
                         )
                     }
                 }
 
-                items(items = (state as ChatsState.OK).chats + ChatListItem(id = "123", title = "Привет! Подскажи, пожалуйста, как"), key = { it.id }) { chatInfo ->
+                items(
+                    items = (state.content as ChatsContent.OK).chats, key = { it.id }) { chatInfo ->
                     DrawerListButton(
                         modifier = buttonModifier,
                         isSelected = (chatInfo.id == curId),
                         text = chatInfo.title,
                         icon = null
-                    ) { component.intent(ChatsIntent.SelectedChat(chatInfo.id)) }
+                    ) { component.intent(SelectedChat(chatInfo.id)) }
                 }
 
 
@@ -162,6 +170,10 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                     Spacer(Modifier.height(verticalPadding))
                 }
             }
+        }
+
+        ChatsContent.Idle -> Box(Modifier.fillMaxSize().padding(horizontal = 15.dp), contentAlignment = Alignment.Center) {
+            Text("Подключись к серверу")
         }
     }
 }
