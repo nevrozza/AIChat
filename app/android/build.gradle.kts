@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.compose.foundation)
     implementation(projects.shared.root.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.decompose.core)

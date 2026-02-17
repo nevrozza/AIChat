@@ -101,6 +101,9 @@ class ChatContainer(
     @OptIn(ExperimentalUuidApi::class)
     private fun Ctx.sendMessage(sentText: String, postSend: suspend () -> Unit = {}) =
         launch(AsyncDispatcher) {
+            val sentText = sentText.trim()
+
+            // TODO: Handle errors =)
             withState {
                 val currentMessages = ((this.messageFeed as? MessageFeed.ShowDialog)?.messages
                     ?: listOf<ChatMessage>())
