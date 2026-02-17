@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.shared.root.compose)
             implementation(libs.koin.core)
             implementation(libs.compose.foundation)
+            api(projects.shared.utils.compose)
         }
     }
 }

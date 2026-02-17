@@ -17,6 +17,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -27,6 +28,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import chat.locals.LocalParentHeight
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -46,9 +48,9 @@ internal fun AdaptiveDrawerContainer(
     val focusManager = LocalFocusManager.current
 
     BoxWithConstraints {
-        val isWide = maxWidth >= 800.dp
+        val isWide = maxWidth >= 600.dp
         isMobileMode(!isWide)
-        val mobileDrawerWidth = (maxWidth * 0.85f).coerceAtLeast(150.dp)
+        val mobileDrawerWidth = (maxWidth * 0.9f).coerceAtLeast(150.dp)
         val mobileDrawerWidthPx = with(LocalDensity.current) { mobileDrawerWidth.toPx() }
 
         val mobileDrawerProgress =
@@ -63,57 +65,60 @@ internal fun AdaptiveDrawerContainer(
             }
         }
 
-
-        if (isWide) {
-            Row(Modifier.fillMaxSize()) {
-                AnimatedVisibility(
-                    visible = drawerState.targetValue == DrawerValue.Open,
-                    enter = expandHorizontally(),
-                    exit = shrinkHorizontally()
-                ) {
-                    Box(
-                        Modifier
-                            .width(300.dp)
-                            .fillMaxHeight()
-                    ) {
-                        drawerContent()
-                    }
-                }
-
-                Box(Modifier.weight(1f)) {
-                    content()
-                }
-            }
-        } else {
-            DismissibleNavigationDrawer(
-                drawerState = drawerState,
-                drawerContent = {
-                    DismissibleDrawerSheet(
-                        Modifier
-                            .width(mobileDrawerWidth),
-                        windowInsets = WindowInsets()
-
+        CompositionLocalProvider(
+            LocalParentHeight provides this@BoxWithConstraints.maxHeight
+        ) {
+            if (isWide) {
+                Row(Modifier.fillMaxSize()) {
+                    AnimatedVisibility(
+                        visible = drawerState.targetValue == DrawerValue.Open,
+                        enter = expandHorizontally(),
+                        exit = shrinkHorizontally()
                     ) {
                         Box(
-                            Modifier.fillMaxSize().mobileDarkenBackground()
+                            Modifier
+                                .width(300.dp)
+                                .fillMaxHeight()
                         ) {
                             drawerContent()
                         }
                     }
+
+                    Box(Modifier.weight(1f)) {
+                        content()
+                    }
                 }
-            ) {
-                content()
-                if (mobileDrawerProgress > darkenProgressEpsilon) {
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .mobileDarkenBackground()
-                            .pointerInput(Unit) {
-                                detectTapGestures {
-                                    scope.launch { drawerState.close() }
-                                }
+            } else {
+                DismissibleNavigationDrawer(
+                    drawerState = drawerState,
+                    drawerContent = {
+                        DismissibleDrawerSheet(
+                            Modifier
+                                .width(mobileDrawerWidth),
+                            windowInsets = WindowInsets()
+
+                        ) {
+                            Box(
+                                Modifier.fillMaxSize().mobileDarkenBackground()
+                            ) {
+                                drawerContent()
                             }
-                    )
+                        }
+                    }
+                ) {
+                    content()
+                    if (mobileDrawerProgress > darkenProgressEpsilon) {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .mobileDarkenBackground()
+                                .pointerInput(Unit) {
+                                    detectTapGestures {
+                                        scope.launch { drawerState.close() }
+                                    }
+                                }
+                        )
+                    }
                 }
             }
         }

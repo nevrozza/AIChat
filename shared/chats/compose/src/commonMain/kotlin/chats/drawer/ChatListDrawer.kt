@@ -65,7 +65,7 @@ internal fun ChatListDrawer(
 
     Column(
         Modifier.focusTarget().padding(
-            start = CommonPaddings.horizontalContentPadding,
+            start = CommonPaddings.startDrawerPadding,
             bottom = calculateImeBottomPadding(),
             top = calculateTopPadding()
         ).clip(containerShape)

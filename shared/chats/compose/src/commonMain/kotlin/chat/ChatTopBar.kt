@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import chats.drawer.LocalChatDrawerState
 import org.jetbrains.compose.resources.painterResource
@@ -51,7 +53,9 @@ internal fun ChatTopBar(
             title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, false)
+            modifier = Modifier.weight(1f, false),
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge
         )
 
 

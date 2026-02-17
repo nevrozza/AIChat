@@ -1,3 +1,4 @@
+import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.window.ComposeUIViewController
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.backhandler.BackDispatcher
@@ -22,7 +23,11 @@ fun MainViewController(): UIViewController {
         )
     )
 
-    return ComposeUIViewController {
+    return ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         App(rootComponent)
     }
 }

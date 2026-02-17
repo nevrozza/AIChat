@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 fun ChatsScreen(
     component: ChatsComponent
 ) {
-    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Open)
 
     var isMobileMode by remember { mutableStateOf(false) }
 
