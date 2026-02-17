@@ -2,21 +2,24 @@ package chats.ktor
 
 import chats.ChatClientEvent
 import chats.ChatListServerEvent
-import chats.ChatServerEvent.*
+import chats.ChatServerEvent
+import chats.ChatServerEvent.ChatCreated
+import chats.ChatServerEvent.ChatHistoryUpdate
 import chats.dtos.ChatInfoDTO
 import chats.dtos.ChatMessageDTO
 import chats.repositories.ChatListNetworkRepository
 import chats.repositories.ChatNetworkRepository
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.launch
 import network.MainSocket
 import network.send
-import kotlin.collections.emptyList
 
 class ChatsRemoteDataSource(
     private val httpClient: HttpClient,
@@ -34,31 +37,54 @@ class ChatsRemoteDataSource(
     }
 
 
-    fun observeChat(chatId: String): Flow<List<ChatMessageDTO>> {
-        return mainSocket.events
+    fun observeChat(chatId: String): Flow<List<ChatMessageDTO>> = channelFlow {
+        // Запускаем подписку в отдельной корутине, чтобы не блокировать основной поток обработки
+        launch {
+            try {
+                subscribeToChat(chatId)
+            } catch (e: Exception) {
+                println("Subscription error: ${e.message}")
+            }
+        }
+
+        mainSocket.events
             .filter { event ->
+                // Используем явные проверки типов, чтобы исключить ошибки импортов
                 (event is ChatHistoryUpdate && event.chatId == chatId) ||
-                        (event is NewMessage && event.message.chatId == chatId)
+                        (event is ChatServerEvent.NewMessage && event.message.chatId == chatId)
             }
             .scan(emptyList<ChatMessageDTO>()) { accumulator, event ->
-                when (event) {
-                    is ChatHistoryUpdate -> event.messages
-                    is NewMessage -> {
-                        val newMessage = event.message
-                        val existingIndex = accumulator.indexOfFirst { it.id == newMessage.id }
+                println("DEBUG: observeChat processing event: $event")
 
-                        if (existingIndex != -1) {
-                            accumulator.toMutableList().apply {
-                                set(existingIndex, newMessage)
+                when (event) {
+                    is ChatHistoryUpdate -> {
+                        val history = event.messages
+                        val historyIds = history.map { it.id }.toSet()
+                        // Объединяем историю с тем, что уже могло прийти
+                        history + accumulator.filter { it.id !in historyIds }
+                    }
+
+                    is ChatServerEvent.NewMessage -> {
+                        val newMessage = event.message
+                        val index = accumulator.indexOfFirst { it.id == newMessage.id }
+
+                        if (index != -1) {
+                            // Если сообщение уже есть (обновление LLM), заменяем его
+                            accumulator.toMutableList().also {
+                                it[index] = newMessage
                             }
                         } else {
+                            // Если новое — добавляем в конец
                             accumulator + newMessage
                         }
                     }
 
                     else -> accumulator
                 }
-            }.distinctUntilChanged()
+            }
+            .collect { list ->
+                send(list)
+            }
     }
 
 

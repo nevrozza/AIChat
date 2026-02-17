@@ -17,8 +17,9 @@ import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.recover
 import pro.respawn.flowmvi.plugins.reduce
 import pro.respawn.flowmvi.plugins.whileSubscribed
-import kotlin.collections.listOf
 import kotlin.time.Duration.Companion.seconds
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private typealias Ctx = PipelineContext<ChatState, ChatIntent, Nothing>
 
@@ -48,9 +49,6 @@ class ChatContainer(
                 updateState { copy(messageFeed = MessageFeed.LoadingError(it)) }
                 null
             }
-            init {
-                loadChat()
-            }
         }
         if (initialMessage != null) {
             init {
@@ -61,7 +59,7 @@ class ChatContainer(
         recover {
             updateState {
                 if (messageFeed is MessageFeed.ShowDialog) {
-                    copy(messageFeed = messageFeed.copy(error = it))
+                    copy(messageFeed = messageFeed.copy(error = it, isSending = false))
                 } else {
                     this
                 }
@@ -69,11 +67,19 @@ class ChatContainer(
             null
         }
         if (chatConfig != null) {
+
             whileSubscribed(stopDelay = 0.seconds) {
-                chatUseCases.subscribeOnChat(chatConfig.id)
                 chatUseCases.observeChat(chatConfig.id).collect { newMessages ->
-                    updateState {
-                        copy(messageFeed = MessageFeed.ShowDialog(newMessages))
+                    updateStateImmediate {
+                        val currentFeed = messageFeed as? MessageFeed.ShowDialog
+                        copy(
+                            messageFeed = MessageFeed.ShowDialog(
+                                messages = newMessages,
+                                isSending = currentFeed?.isSending ?: false,
+                                isAnswering = currentFeed?.isAnswering ?: false,
+                                error = currentFeed?.error
+                            )
+                        )
                     }
                 }
             }
@@ -86,47 +92,50 @@ class ChatContainer(
                     copy(inputText = intent.text)
                 }
             }
-
         }
-
     }
 
-    private fun Ctx.sendMessage(sentText: String) = launch(AsyncDispatcher) {
-        withState {
-            val currentMessages = ((this.messageFeed as? MessageFeed.ShowDialog)?.messages
-                ?: listOf<ChatMessage>())
-            val itWasNew =
-                this.messageFeed is MessageFeed.NewChat
+    @OptIn(ExperimentalUuidApi::class)
+    private fun Ctx.sendMessage(sentText: String, postSend: suspend () -> Unit = {}) =
+        launch(AsyncDispatcher) {
+            withState {
+                val currentMessages = ((this.messageFeed as? MessageFeed.ShowDialog)?.messages
+                    ?: listOf<ChatMessage>())
+                val itWasNew =
+                    this.messageFeed is MessageFeed.NewChat
 
-            updateState {
-                this.copy(
-                    inputText = "",
-                    messageFeed = MessageFeed.ShowDialog(
-                        messages = currentMessages + ChatMessage(sentText, true),
-                        isSending = true
-                    )
-                )
-            }
-
-            if (itWasNew) {
-                val id = chatUseCases.createChat(sentText)
-                launch(Dispatchers.Main) { // triggers decompose navigation
-                    onChatCreate(
-                        id,
-                        sentText
-                    )
-                }
                 updateState {
-                    this.copy(inputText = "", messageFeed = MessageFeed.NewChat)
+                    this.copy(
+                        inputText = "",
+                        messageFeed = MessageFeed.ShowDialog(
+                            messages = currentMessages + ChatMessage(
+                                text = sentText,
+                                isFromMe = true,
+                                id = Uuid.random().toString()
+                            ),
+                            isSending = true
+                        )
+                    )
                 }
-                return@withState
-            } else {
-                chatUseCases.sendMessage(chatId = chatConfig!!.id, sentText)
+
+                if (itWasNew) {
+                    val id = chatUseCases.createChat(sentText)
+                    launch(Dispatchers.Main) { // triggers decompose navigation
+                        onChatCreate(
+                            id,
+                            sentText
+                        )
+                    }
+                    updateState {
+                        this.copy(inputText = "", messageFeed = MessageFeed.NewChat)
+                    }
+                    return@withState
+                } else {
+                    launch { // lol
+                        chatUseCases.sendMessage(chatId = chatConfig!!.id, sentText)
+                        postSend()
+                    }
+                }
             }
         }
-    }
-
-    private fun Ctx.loadChat() = launch(AsyncDispatcher) {
-        // TODO
-    }
 }

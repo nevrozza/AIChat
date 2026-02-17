@@ -10,6 +10,7 @@ class ObserveChatUseCase(
     private val repository: ChatRepository
 ) {
     operator fun invoke(chatId: String): Flow<List<ChatMessage>> {
-        return repository.observeChat(chatId).map { it.listToDomain() }
+        return repository.observeChat(chatId)
+            .map { it.listToDomain() }
     }
 }

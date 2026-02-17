@@ -44,6 +44,7 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
                 launch {
                     chatsService.messageBus.collect { msg ->
                         if (msg.chatId == event.chatId) {
+                            println("SERVER: Sending NewMessage to client: ${msg.text}")
                             sendWSResponse(null, NewMessage(msg))
                         }
                     }

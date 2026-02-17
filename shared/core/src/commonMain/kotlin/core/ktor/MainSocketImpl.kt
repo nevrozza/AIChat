@@ -8,6 +8,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,8 @@ import kotlin.uuid.Uuid
 class MainSocketImpl(
     private val client: HttpClient
 ) : MainSocket {
-    override val events: MutableSharedFlow<Event> = MutableSharedFlow()
+    override val events: MutableSharedFlow<Event> =
+        MutableSharedFlow(extraBufferCapacity = 128, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     override val state: MutableStateFlow<SocketState> = MutableStateFlow(SocketState.Idle)
 
     private val scope = CoroutineScope(AsyncDispatcher + SupervisorJob())
@@ -94,6 +96,7 @@ class MainSocketImpl(
                 deferred.completeExceptionally(ServerException(event.message))
             } else {
                 deferred.complete(event)
+                events.emit(event)
             }
         } else {
             events.emit(event)
