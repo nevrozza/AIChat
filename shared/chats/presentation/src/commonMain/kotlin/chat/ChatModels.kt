@@ -1,12 +1,10 @@
 package chat
 
+import chats.entity.ChatMessage
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 
-data class ChatMessage(
-    val text: String,
-    val isFromMe: Boolean
-)
+
 
 
 // immutability?

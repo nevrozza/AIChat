@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import network.MainSocket
 import network.send
+import kotlin.collections.emptyList
 
 class ChatsRemoteDataSource(
     private val httpClient: HttpClient,
@@ -38,8 +39,8 @@ class ChatsRemoteDataSource(
             .filter { event ->
                 (event is ChatHistoryUpdate && event.chatId == chatId) ||
                         (event is NewMessage && event.message.chatId == chatId)
-            }.distinctUntilChanged()
-            .scan(emptyList()) { accumulator, event ->
+            }
+            .scan(emptyList<ChatMessageDTO>()) { accumulator, event ->
                 when (event) {
                     is ChatHistoryUpdate -> event.messages
                     is NewMessage -> {
@@ -57,7 +58,7 @@ class ChatsRemoteDataSource(
 
                     else -> accumulator
                 }
-            }
+            }.distinctUntilChanged()
     }
 
 

@@ -3,7 +3,7 @@ package chat.content.showDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import chat.ChatMessage
+import chats.entity.ChatMessage
 
 @Composable
 internal fun MessageFeed(

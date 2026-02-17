@@ -2,6 +2,7 @@ package chat
 
 import chat.ChatState.MessageFeed
 import chats.entity.ChatListItem
+import chats.entity.ChatMessage
 import chats.usecases.ChatUseCases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,7 @@ import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.recover
 import pro.respawn.flowmvi.plugins.reduce
 import pro.respawn.flowmvi.plugins.whileSubscribed
+import kotlin.collections.listOf
 import kotlin.time.Duration.Companion.seconds
 
 private typealias Ctx = PipelineContext<ChatState, ChatIntent, Nothing>
@@ -66,9 +68,15 @@ class ChatContainer(
             }
             null
         }
-
-        whileSubscribed(stopDelay = 0.seconds) {
-            // subscribe on ws messages
+        if (chatConfig != null) {
+            whileSubscribed(stopDelay = 0.seconds) {
+                chatUseCases.subscribeOnChat(chatConfig.id)
+                chatUseCases.observeChat(chatConfig.id).collect { newMessages ->
+                    updateState {
+                        copy(messageFeed = MessageFeed.ShowDialog(newMessages))
+                    }
+                }
+            }
         }
 
         reduce { intent ->
@@ -86,7 +94,7 @@ class ChatContainer(
     private fun Ctx.sendMessage(sentText: String) = launch(AsyncDispatcher) {
         withState {
             val currentMessages = ((this.messageFeed as? MessageFeed.ShowDialog)?.messages
-                ?: listOf())
+                ?: listOf<ChatMessage>())
             val itWasNew =
                 this.messageFeed is MessageFeed.NewChat
 
@@ -113,7 +121,7 @@ class ChatContainer(
                 }
                 return@withState
             } else {
-                // sendMessage
+                chatUseCases.sendMessage(chatId = chatConfig!!.id, sentText)
             }
         }
     }
