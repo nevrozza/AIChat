@@ -2,15 +2,22 @@ package chats.ktor
 
 import chats.ChatClientEvent
 import chats.ChatListServerEvent
+import chats.ChatServerEvent
+import chats.ChatServerEvent.ChatCreated
+import chats.ChatServerEvent.ChatHistoryUpdate
 import chats.dtos.ChatInfoDTO
+import chats.dtos.ChatMessageDTO
 import chats.repositories.ChatListNetworkRepository
 import chats.repositories.ChatNetworkRepository
-import network.MainSocket
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.scan
+import network.MainSocket
+import network.send
 
 class ChatsRemoteDataSource(
     private val httpClient: HttpClient,
@@ -21,8 +28,49 @@ class ChatsRemoteDataSource(
         .map { it.chatsInfo }
         .distinctUntilChanged() // update only if smth changed
 
-    override suspend fun createChat(name: String) {
-        mainSocket.send(ChatClientEvent.CreateChat(name))
+    override suspend fun createChat(name: String): String {
+        val chatCreatedEvent: ChatCreated =
+            mainSocket.send(ChatClientEvent.CreateChat(name))
+        return chatCreatedEvent.id
     }
 
+
+    fun observeChat(chatId: String): Flow<List<ChatMessageDTO>> = mainSocket.events
+        .filter { event ->
+            (event is ChatHistoryUpdate && event.chatId == chatId) ||
+                    (event is ChatServerEvent.NewMessage && event.message.chatId == chatId)
+        }
+        .scan(emptyList<ChatMessageDTO>()) { accumulator, event ->
+            when (event) {
+                is ChatHistoryUpdate -> {
+                    val history = event.messages
+                    val historyIds = history.map { it.id }.toSet()
+                    history + accumulator.filter { it.id !in historyIds }
+                }
+
+                is ChatServerEvent.NewMessage -> {
+                    val newMessage = event.message
+                    val index = accumulator.indexOfFirst { it.id == newMessage.id }
+
+                    if (index != -1) {
+                        accumulator.toMutableList().also {
+                            it[index] = newMessage
+                        }
+                    } else {
+                        accumulator + newMessage
+                    }
+                }
+
+                else -> accumulator
+            }
+        }.distinctUntilChanged()
+
+
+    suspend fun sendMessage(chatId: String, text: String) {
+        mainSocket.sendRaw(ChatClientEvent.SendMessage(chatId = chatId, text = text))
+    }
+
+    suspend fun subscribeToChat(chatId: String) {
+        mainSocket.sendRaw(ChatClientEvent.SubscribeToChat(chatId))
+    }
 }

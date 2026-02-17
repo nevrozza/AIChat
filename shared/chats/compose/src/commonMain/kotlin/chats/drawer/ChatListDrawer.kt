@@ -5,6 +5,9 @@ import CommonPaddings.calculateBottomPadding
 import CommonPaddings.calculateTopPadding
 import aichat.shared.chats.compose.generated.resources.Res
 import aichat.shared.chats.compose.generated.resources.edit_square
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +33,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import chats.ChatsComponent
 import chats.ChatsComponent.Config
@@ -158,7 +162,13 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                 items(
                     items = (state.content as ChatsContent.OK).chats, key = { it.id }) { chatInfo ->
                     DrawerListButton(
-                        modifier = buttonModifier,
+                        modifier = buttonModifier.animateItem(
+                            fadeInSpec = spring(stiffness = Spring.StiffnessVeryLow),
+                            placementSpec = spring(
+                                stiffness = Spring.StiffnessVeryLow,
+                                visibilityThreshold = IntOffset.VisibilityThreshold,
+                            )
+                        ),
                         isSelected = (chatInfo.id == curId),
                         text = chatInfo.title,
                         icon = null
@@ -172,7 +182,10 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
             }
         }
 
-        ChatsContent.Idle -> Box(Modifier.fillMaxSize().padding(horizontal = 15.dp), contentAlignment = Alignment.Center) {
+        ChatsContent.Idle -> Box(
+            Modifier.fillMaxSize().padding(horizontal = 15.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Text("Подключись к серверу")
         }
     }

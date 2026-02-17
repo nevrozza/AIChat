@@ -1,5 +1,5 @@
 package chats.repositories
 
 interface ChatNetworkRepository {
-    suspend fun createChat(name: String)
+    suspend fun createChat(name: String): String
 }

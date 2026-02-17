@@ -2,7 +2,7 @@ package chat.content.showDialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import chat.ChatMessage
+import chats.entity.ChatMessage
 
 @Composable
 fun ShowDialogContent(

@@ -1,9 +1,8 @@
 package core.ktor
 
-import network.MainSocket
-import core.ktor.sockets.MainSocketImpl
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.StateFlow
+import network.MainSocket
 import org.koin.dsl.module
 import utils.api.SocketState
 

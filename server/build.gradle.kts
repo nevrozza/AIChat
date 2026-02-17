@@ -32,3 +32,7 @@ dependencies {
 
     implementation(libs.koog.ktor)
 }
+
+kotlin {
+    jvmToolchain(Config.Java.jdkVersion)
+}

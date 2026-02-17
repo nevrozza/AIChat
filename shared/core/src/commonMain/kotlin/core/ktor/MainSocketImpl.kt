@@ -1,6 +1,5 @@
-package core.ktor.sockets
+package core.ktor
 
-import core.ktor.proto
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
@@ -9,6 +8,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +31,8 @@ import kotlin.uuid.Uuid
 class MainSocketImpl(
     private val client: HttpClient
 ) : MainSocket {
-    override val events: MutableSharedFlow<Event> = MutableSharedFlow()
+    override val events: MutableSharedFlow<Event> =
+        MutableSharedFlow(extraBufferCapacity = 128, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     override val state: MutableStateFlow<SocketState> = MutableStateFlow(SocketState.Idle)
 
     private val scope = CoroutineScope(AsyncDispatcher + SupervisorJob())
@@ -85,6 +86,7 @@ class MainSocketImpl(
     }
 
     private suspend fun processFrame(wsFrame: WSFrame) {
+        println("MEOW: ${wsFrame}")
         val requestId = wsFrame.id
         val event = wsFrame.event
 
@@ -95,6 +97,7 @@ class MainSocketImpl(
                 deferred.completeExceptionally(ServerException(event.message))
             } else {
                 deferred.complete(event)
+                events.emit(event)
             }
         } else {
             events.emit(event)
@@ -102,7 +105,7 @@ class MainSocketImpl(
     }
 
     @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
-    override suspend fun send(event: Event): Event {
+    override suspend fun sendRaw(event: Event): Event {
         val requestId = Uuid.random().toString()
         val deferred = CompletableDeferred<Event>()
 

@@ -21,3 +21,7 @@ dependencies {
     // An error in the editor, although the dependencies are correctly resolved.
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
+
+kotlin {
+    jvmToolchain(21)
+}
