@@ -55,7 +55,7 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
 }
 
 suspend fun simulateLlmStreaming(chatId: String, chatService: ChatsService) {
-    val fullResponse = "Это ответ от нейросети в реальном времени..."
+    val fullResponse = "Это ооооооочеьн долгий ответ о о о о о о о о о о о о о о о о о о о о о о о о ответ от нейросети в реальном времени..."
     val messageId = UUID.randomUUID().toString()
     val sb = StringBuilder()
 

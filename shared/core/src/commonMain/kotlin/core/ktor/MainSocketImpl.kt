@@ -86,6 +86,7 @@ class MainSocketImpl(
     }
 
     private suspend fun processFrame(wsFrame: WSFrame) {
+        println("MEOW: ${wsFrame}")
         val requestId = wsFrame.id
         val event = wsFrame.event
 

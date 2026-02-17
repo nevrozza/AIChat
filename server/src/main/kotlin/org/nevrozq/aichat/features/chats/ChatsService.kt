@@ -29,7 +29,7 @@ class ChatsServiceImpl : ChatsService {
     override val chats: MutableStateFlow<List<ChatInfoDTO>> = MutableStateFlow(emptyList())
 
     override val messageBus =
-        MutableSharedFlow<ChatMessageDTO>(extraBufferCapacity = 64, replay = 30)
+        MutableSharedFlow<ChatMessageDTO>(extraBufferCapacity = 64)
 
     private val chatHistory = mutableMapOf<String, MutableList<ChatMessageDTO>>() // TODO: db
 

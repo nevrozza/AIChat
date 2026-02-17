@@ -69,6 +69,9 @@ class ChatContainer(
         if (chatConfig != null) {
 
             whileSubscribed(stopDelay = 0.seconds) {
+                launch {
+                    chatUseCases.subscribeOnChat(chatConfig.id)
+                }
                 chatUseCases.observeChat(chatConfig.id).collect { newMessages ->
                     updateStateImmediate {
                         val currentFeed = messageFeed as? MessageFeed.ShowDialog
