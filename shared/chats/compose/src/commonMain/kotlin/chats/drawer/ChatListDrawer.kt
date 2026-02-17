@@ -1,7 +1,7 @@
 package chats.drawer
 
 import CommonPaddings
-import CommonPaddings.calculateBottomPadding
+import CommonPaddings.calculateImeBottomPadding
 import CommonPaddings.calculateTopPadding
 import aichat.shared.chats.compose.generated.resources.Res
 import aichat.shared.chats.compose.generated.resources.edit_square
@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -63,9 +64,9 @@ internal fun ChatListDrawer(
     val backgroundColor = MaterialTheme.colorScheme.surfaceContainer
 
     Column(
-        Modifier.padding(
+        Modifier.focusTarget().padding(
             start = CommonPaddings.horizontalContentPadding,
-            bottom = calculateBottomPadding(),
+            bottom = calculateImeBottomPadding(),
             top = calculateTopPadding()
         ).clip(containerShape)
             .drawBehind {
@@ -97,6 +98,7 @@ internal fun ChatListDrawer(
             onDisconnectClick = { component.intent(ChatsIntent.ClickedDisconnect) }
         )
     }
+
 }
 
 @Composable
@@ -112,7 +114,7 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
             ) {
                 // for centering error message
                 TextButton(
-                    onClick = {},
+                    onClick = { },
                     modifier = Modifier.alpha(0f),
                     enabled = false
                 ) { Text("Попробовать ещё раз") }
@@ -121,7 +123,7 @@ private fun ChatListDrawerContent(component: ChatsComponent) {
                     (state.content as ChatsContent.Error).e?.message ?: "Unknown error",
                     textAlign = TextAlign.Center
                 )
-                TextButton(onClick = { TODO() }) {
+                TextButton(onClick = component::restartState) {
                     Text("Попробовать ещё раз")
                 }
             }

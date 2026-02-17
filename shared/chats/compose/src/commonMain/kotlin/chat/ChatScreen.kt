@@ -1,14 +1,15 @@
 package chat
 
 import CommonPaddings
-import CommonPaddings.calculateBottomPadding
+import CommonPaddings.calculateImeBottomPadding
 import CommonPaddings.calculateTopPadding
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,44 +36,49 @@ internal fun ChatScreen(
         lifecycleOwner = component,
         lifecycleState = Lifecycle.State.RESUMED
     )
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-            .padding(horizontal = CommonPaddings.horizontalContentPadding),
-        bottomBar = {
-            StateChatBottomBar(
-                state,
-                onTextChange = { container.intent(ChatIntent.TypedMessage(it)) },
-                onSendClick = { container.intent(ChatIntent.SentMessage) }
-            )
-        },
-        topBar = {
-            ChatTopBar(
-                modifier = Modifier.fillMaxWidth().padding(top = calculateTopPadding()),
-                title = state.chatTitle,
-                onDrawerClick = component.onDrawerClick,
-                onNewChatClick = component.navigateToEmptyNewChat,
-                isNewChatButtonVisible = state.messageFeed !is MessageFeed.NewChat
-            )
-        }
-    ) {
-        TypeCrossfade(
-            state.messageFeed,
-            modifier = Modifier
-        ) {
-            when (this) {
-                MessageFeed.Loading -> LoadingContent()
-                is MessageFeed.LoadingError -> {
-                    LoadingErrorContent(error = this.error) { }
-                }
-
-                MessageFeed.NewChat -> NewChatContent()
-                is MessageFeed.ShowDialog -> ShowDialogContent(
-                    messages = this.messages,
-                    isAnswering = this.isAnswering,
-                    isSending = this.isSending,
-                    lastError = this.error
+    Surface {
+        Scaffold(
+            modifier = Modifier.fillMaxSize()
+                .padding(horizontal = CommonPaddings.horizontalContentPadding),
+            bottomBar = {
+                StateChatBottomBar(
+                    state,
+                    onTextChange = { container.intent(ChatIntent.TypedMessage(it)) },
+                    onSendClick = { container.intent(ChatIntent.SentMessage) }
                 )
+            },
+            topBar = {
+                ChatTopBar(
+                    modifier = Modifier.fillMaxWidth().padding(top = calculateTopPadding()),
+                    title = state.chatTitle,
+                    onDrawerClick = component.onDrawerClick,
+                    onNewChatClick = component.navigateToEmptyNewChat,
+                    isNewChatButtonVisible = state.messageFeed !is MessageFeed.NewChat
+                )
+            }
+        ) {
+            TypeCrossfade(
+                state.messageFeed,
+                modifier = Modifier,
+                animationSpec = tween(durationMillis = 300)
+            ) {
+                when (this) {
+                    MessageFeed.Loading -> LoadingContent()
+                    is MessageFeed.LoadingError -> {
+                        LoadingErrorContent(
+                            error = this.error,
+                            onTryAgainClick = component::restartState
+                        )
+                    }
+
+                    MessageFeed.NewChat -> NewChatContent()
+                    is MessageFeed.ShowDialog -> ShowDialogContent(
+                        messages = this.messages,
+                        isAnswering = this.isAnswering,
+                        isSending = this.isSending,
+                        lastError = this.error
+                    )
+                }
             }
         }
     }
@@ -86,7 +92,9 @@ private fun StateChatBottomBar(
 ) {
 //    val animatedAlpha by animateFloatAsState(if (state.messageFeed is ChatState.MessageFeed.ShowDialog) 1f else .5f)
     Box(
-        Modifier.fillMaxWidth().padding(bottom = calculateBottomPadding()).imePadding(),
+        Modifier.fillMaxWidth().padding(
+            bottom = calculateImeBottomPadding()
+        ),
         contentAlignment = Alignment.Center
     ) {
         ChatBottomBar(

@@ -20,8 +20,10 @@ import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import presentation.componentCoroutineScope
 import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.Store
 import pro.respawn.flowmvi.dsl.state
@@ -42,6 +44,13 @@ class RealChatsComponent(
 
     override val uiEvents: MutableSharedFlow<ChatsComponent.UIEvent> =
         MutableSharedFlow(extraBufferCapacity = 64)
+
+    override fun restartState() {
+        componentCoroutineScope.launch {
+            this@RealChatsComponent.closeAndWait()
+            this@RealChatsComponent.start(componentCoroutineScope)
+        }
+    }
 
     override val nav: StackNavigation<Config> = StackNavigation()
 
@@ -73,7 +82,6 @@ class RealChatsComponent(
                         navigateToEmptyNewChat = { navigateToChat(null, null) }
                     )
                 )
-                // child.component.container.intent() TODO: update messages?
 
                 child
             } else {
@@ -94,9 +102,24 @@ class RealChatsComponent(
         subscribe {
             actions.collect { action ->
                 when (action) {
-                    is SelectChat -> navigateToChat(action.id, newSendMessage = null)
+                    is SelectChat -> {
+                        navigateToChat(action.id, newSendMessage = null)
+
+                        uiEvents.emit(
+                            ChatsComponent.UIEvent.SetDrawerOpened(
+                                false,
+                                isForMobileDelayed = true
+                            )
+                        )
+                    }
+
                     is ChatsAction.SetDrawerOpened ->
-                        uiEvents.emit(ChatsComponent.UIEvent.SetDrawerOpened(action.isOpened))
+                        uiEvents.emit(
+                            ChatsComponent.UIEvent.SetDrawerOpened(
+                                action.isOpened,
+                                isForMobileDelayed = false
+                            )
+                        )
 
                 }
             }

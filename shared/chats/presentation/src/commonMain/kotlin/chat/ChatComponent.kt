@@ -3,6 +3,7 @@ package chat
 import chats.entity.ChatListItem
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import presentation.componentCoroutineScope
@@ -13,6 +14,8 @@ interface ChatComponent : ComponentContext, LifecycleOwner {
     val onDrawerClick: () -> Unit
 
     val navigateToEmptyNewChat: () -> Unit
+
+    fun restartState()
 }
 
 class RealChatComponent(
@@ -30,4 +33,11 @@ class RealChatComponent(
         initialMessage = initialMessage,
         coroutineScope = componentCoroutineScope
     )
+
+    override fun restartState() {
+        componentCoroutineScope.launch {
+            container.store.closeAndWait()
+            container.store.start(componentCoroutineScope)
+        }
+    }
 }

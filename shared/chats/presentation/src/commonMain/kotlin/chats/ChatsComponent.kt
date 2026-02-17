@@ -21,6 +21,8 @@ interface ChatsComponent : DefaultStack<Config, Child>,
     val socketState: StateFlow<SocketState>
     val uiEvents: Flow<UIEvent>
 
+    fun restartState()
+
     sealed interface Child {
         class ChatChild(val component: ChatComponent) : Child
     }
@@ -32,6 +34,6 @@ interface ChatsComponent : DefaultStack<Config, Child>,
     }
 
     sealed interface UIEvent {
-        data class SetDrawerOpened(val isOpened: Boolean) : UIEvent
+        data class SetDrawerOpened(val isOpened: Boolean, val isForMobileDelayed: Boolean) : UIEvent
     }
 }

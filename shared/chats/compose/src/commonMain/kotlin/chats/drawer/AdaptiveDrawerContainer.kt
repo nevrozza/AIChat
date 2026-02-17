@@ -37,6 +37,7 @@ val LocalChatDrawerState = staticCompositionLocalOf<DrawerState> {
 @Composable
 internal fun AdaptiveDrawerContainer(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    isMobileMode: (Boolean) -> Unit,
     drawerContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -46,7 +47,7 @@ internal fun AdaptiveDrawerContainer(
 
     BoxWithConstraints {
         val isWide = maxWidth >= 800.dp
-
+        isMobileMode(!isWide)
         val mobileDrawerWidth = (maxWidth * 0.85f).coerceAtLeast(150.dp)
         val mobileDrawerWidthPx = with(LocalDensity.current) { mobileDrawerWidth.toPx() }
 
@@ -119,8 +120,6 @@ internal fun AdaptiveDrawerContainer(
     }
 
     LaunchedEffect(drawerState.isOpen) {
-        if (drawerState.isOpen) {
-            focusManager.clearFocus()
-        }
+        focusManager.clearFocus()
     }
 }

@@ -1,9 +1,12 @@
 package chat.content
 
+import CommonPaddings.calculateImeBottomPadding
+import CommonPaddings.calculateTopPadding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -15,7 +18,10 @@ import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun NewChatContent() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        Modifier.fillMaxSize().padding(bottom = calculateImeBottomPadding(), top = calculateTopPadding()),
+        contentAlignment = Alignment.Center
+    ) {
         Text("Привет!\nС чем я могу помочь?", textAlign = TextAlign.Center)
     }
 }
@@ -39,7 +45,7 @@ fun LoadingErrorContent(
     ) {
         // for centering error message
         TextButton(
-            onClick = {},
+            onClick = {  },
             modifier = Modifier.alpha(0f),
             enabled = false
         ) { Text("Попробовать ещё раз") }
