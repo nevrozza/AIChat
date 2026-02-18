@@ -10,16 +10,18 @@ import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.nevrozq.aichat.EnvVals
 import org.nevrozq.aichat.features.chats.db.ChatMessagesTable
 import org.nevrozq.aichat.features.chats.db.ChatsTable
+
 
 
 fun Application.configureDatabases() {
     val config = HikariConfig().apply {
         driverClassName = "org.postgresql.Driver"
-        jdbcUrl = "..."
-        username = "..."
-        password = "..."
+        jdbcUrl = EnvVals.sqlUrl
+        username = EnvVals.sqlUser
+        password = EnvVals.sqlPassword
         maximumPoolSize = 10
         isAutoCommit = false
         transactionIsolation = "TRANSACTION_REPEATABLE_READ"
