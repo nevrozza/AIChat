@@ -2,6 +2,8 @@
 
 \+ В ui пока нет стейта "Thinking", поэтому нужно просто ждать...
 
+(на macos нейронка в докере работает в 13131 раз хуже((()
+
 ```
 # DEV
 docker compose -f docker-compose.dev.yml up -d

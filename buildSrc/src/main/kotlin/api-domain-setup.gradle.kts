@@ -12,5 +12,10 @@ kotlin {
 
             api(project(":shared:utils:api"))
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
+        }
     }
 }
