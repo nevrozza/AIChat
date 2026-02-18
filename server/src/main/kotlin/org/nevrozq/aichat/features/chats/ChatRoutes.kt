@@ -47,7 +47,7 @@ fun Route.chatRoutes() {
                             is ChatClientEvent -> handleChatEvent(
                                 event, inWSFrame.id, chatService,
                                 aiSession = aiSession,
-                                onNewSubscribtion = { newJob ->
+                                onNewSubscription = { newJob ->
                                     subscriptionJob?.cancel()
                                     subscriptionJob = newJob
                                 }

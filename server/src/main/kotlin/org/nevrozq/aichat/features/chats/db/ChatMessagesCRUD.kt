@@ -3,7 +3,7 @@ package org.nevrozq.aichat.features.chats.db
 import chats.dtos.ChatMessageDTO
 import org.jetbrains.exposed.v1.core.eq
 
-fun ChatMessageEntity.Companion.inesert(message: ChatMessageDTO) {
+fun ChatMessageEntity.Companion.insert(message: ChatMessageDTO) {
     val chatRef = ChatEntity.findById(message.chatId)
         ?: throw IllegalArgumentException("Chat not found")
 

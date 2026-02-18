@@ -17,9 +17,9 @@ import org.nevrozq.aichat.features.chats.db.ChatsTable
 fun Application.configureDatabases() {
     val config = HikariConfig().apply {
         driverClassName = "org.postgresql.Driver"
-        jdbcUrl = ".."
-        username = ".."
-        password = ".."
+        jdbcUrl = "..."
+        username = "..."
+        password = "..."
         maximumPoolSize = 10
         isAutoCommit = false
         transactionIsolation = "TRANSACTION_REPEATABLE_READ"

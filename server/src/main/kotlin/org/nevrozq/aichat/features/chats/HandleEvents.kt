@@ -17,7 +17,7 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
     requestId: String?,
     chatsService: ChatsService,
     aiSession: AISession,
-    onNewSubscribtion: (Job) -> Unit
+    onNewSubscription: (Job) -> Unit
 ) {
     when (event) {
         is ChatClientEvent.CreateChat -> {
@@ -68,7 +68,7 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
             val history = chatsService.getHistory(event.chatId)
             sendWSResponse(requestId, ChatHistoryUpdate(event.chatId, history))
 
-            onNewSubscribtion(
+            onNewSubscription(
                 launch {
                     chatsService.messageBus.collect { msg ->
                         if (msg.chatId == event.chatId) {
