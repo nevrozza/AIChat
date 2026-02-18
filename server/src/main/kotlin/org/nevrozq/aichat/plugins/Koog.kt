@@ -8,7 +8,7 @@ fun Application.configureKoog() {
     install(Koog) {
         llm {
             this.ollama {
-                baseUrl = "http://localhost:11434"
+                baseUrl = "http://ollama:11434"
             }
 
         }

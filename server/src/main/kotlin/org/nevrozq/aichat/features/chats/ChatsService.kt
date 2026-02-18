@@ -8,6 +8,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
+import org.nevrozq.aichat.features.chats.db.ChatEntity
+import org.nevrozq.aichat.features.chats.db.ChatMessageEntity
+import org.nevrozq.aichat.features.chats.db.getAllChatDTOs
+import org.nevrozq.aichat.features.chats.db.getChatHistory
+import org.nevrozq.aichat.features.chats.db.insert
+import org.nevrozq.aichat.plugins.dbQuery
 import java.util.UUID
 
 interface ChatsService : ChatListNetworkRepository, ChatNetworkRepository {
@@ -22,7 +29,7 @@ interface ChatsService : ChatListNetworkRepository, ChatNetworkRepository {
 
     suspend fun emitToMessageBus(message: ChatMessageDTO)
 
-    fun getHistory(chatId: String): List<ChatMessageDTO>
+    suspend fun getHistory(chatId: String): List<ChatMessageDTO>
 }
 
 class ChatsServiceImpl : ChatsService {
@@ -31,10 +38,19 @@ class ChatsServiceImpl : ChatsService {
     override val messageBus =
         MutableSharedFlow<ChatMessageDTO>(extraBufferCapacity = 64)
 
-    private val chatHistory = mutableMapOf<String, MutableList<ChatMessageDTO>>() // TODO: db
+    init {
+        runBlocking {
+            chats.value = dbQuery {
+                ChatEntity.getAllChatDTOs()
+            }
+        }
+    }
 
     override suspend fun createChat(name: String): String {
         val newChat = ChatInfoDTO(id = UUID.randomUUID().toString(), title = name)
+        dbQuery {
+            ChatEntity.insert(newChat)
+        }
         chats.update { currentList ->
             currentList + newChat
         }
@@ -54,8 +70,9 @@ class ChatsServiceImpl : ChatsService {
             isFromUser = isFromUser,
             isFull = true
         )
-        chatHistory.getOrPut(chatId, ::mutableListOf)
-        chatHistory[chatId]?.add(message)
+        dbQuery {
+            ChatMessageEntity.insert(message)
+        }
         messageBus.emit(message)
     }
 
@@ -63,6 +80,8 @@ class ChatsServiceImpl : ChatsService {
         messageBus.emit(message)
     }
 
-    override fun getHistory(chatId: String): List<ChatMessageDTO> =
-        chatHistory[chatId] ?: emptyList()
+    override suspend fun getHistory(chatId: String): List<ChatMessageDTO> =
+        dbQuery {
+            ChatMessageEntity.getChatHistory(chatId)
+        }
 }

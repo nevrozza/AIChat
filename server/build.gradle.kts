@@ -8,13 +8,23 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
+
 group = "org.nevrozq.aichat"
 version = "1.0.0"
 application {
+    applicationName = "server"
     mainClass.set("org.nevrozq.aichat.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+
+
+}
+
+ktor {
+    fatJar {
+        archiveFileName.set("fat.jar")
+    }
 }
 
 dependencies {
@@ -31,8 +41,14 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
 
     implementation(libs.koog.ktor)
+
+    // Database
+    implementation(libs.bundles.exposed)
+    implementation(libs.postgresql)
+    implementation(libs.hikaricp)
 }
 
 kotlin {
     jvmToolchain(Config.Java.jdkVersion)
 }
+

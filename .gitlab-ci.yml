@@ -1,0 +1,59 @@
+stages:
+  - test
+  #  - lint
+  - build
+
+variables:
+  DOCKER_IMAGE_BACKEND: $DOCKER_HUB_USER/aichat-backend
+  DOCKER_IMAGE_FRONTEND: $DOCKER_HUB_USER/aichat-frontend
+
+.gradle_template:
+  image: gradle:9.3.1-jdk21-jammy
+  variables:
+    GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  cache:
+    key: gradle-cache
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+
+.docker_template:
+  image: docker:29.2.1
+  services:
+    - docker:29.2.1-dind
+  before_script:
+    - docker info
+    - docker login -u "$DOCKERHUB_USER" -p "$DOCKER_HUB_TOKEN"
+
+
+test:
+  extends: .gradle_template
+  stage: test
+  script:
+    - gradle jvmTest --no-daemon
+  artifacts:
+    when: always
+    reports:
+      junit: "**/build/test-results/**/*.xml"
+
+# TODO: ADD KTLINT
+#lint:
+#  extends: .gradle_template
+#  stage: lint
+#  script:
+#    - gradle lint --no-daemon
+#  allow_failure: true
+
+build_and_push:
+  extends: .docker_template
+  stage: build
+  script:
+    # Backend
+    - docker build --target backend -t $DOCKER_IMAGE_BACKEND:latest .
+    - docker push $DOCKER_IMAGE_BACKEND:latest
+    
+    # Frontend
+    - docker build --target frontend -t $DOCKER_IMAGE_FRONTEND:latest .
+    - docker push $DOCKER_IMAGE_FRONTEND:latest
+  only:
+    - main
