@@ -3,6 +3,7 @@ package org.nevrozq.aichat.features.chats
 import chats.ChatClientEvent
 import chats.ChatListServerEvent
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.application
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
 import kotlinx.coroutines.Job
@@ -15,11 +16,17 @@ import org.nevrozq.aichat.utils.sendWSResponse
 import utils.api.Event
 import utils.api.WSFrame
 
+
 @OptIn(ExperimentalSerializationApi::class)
 fun Route.chatRoutes() {
     val chatService: ChatsService = ChatsServiceImpl() // TODO: DI
 
+
+
     webSocket("/chat") {
+        val aiSession = AISession(application.llm())
+
+
         var subscriptionJob: Job? = null
 
 
@@ -39,6 +46,7 @@ fun Route.chatRoutes() {
                         when (val event = inWSFrame.event) {
                             is ChatClientEvent -> handleChatEvent(
                                 event, inWSFrame.id, chatService,
+                                aiSession = aiSession,
                                 onNewSubscribtion = { newJob ->
                                     subscriptionJob?.cancel()
                                     subscriptionJob = newJob
@@ -61,4 +69,5 @@ fun Route.chatRoutes() {
             subscriptionJob?.cancel()
         }
     }
+
 }

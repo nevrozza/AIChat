@@ -34,11 +34,13 @@ fun Application.module() {
 
 
     routing {
+
         get("/") {
             call.respondText("Ktor works")
         }
 
         get("/ai") {
+
             val a = llm().executeStreaming(
                 prompt = prompt("chat") {
                     user("Помоги мне пожалуйста! Скажи, почему писать бэк на котлине лучше чем на питоне")

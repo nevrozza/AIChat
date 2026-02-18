@@ -16,6 +16,7 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
     event: ChatClientEvent,
     requestId: String?,
     chatsService: ChatsService,
+    aiSession: AISession,
     onNewSubscribtion: (Job) -> Unit
 ) {
     when (event) {
@@ -25,14 +26,41 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
         }
 
         is ChatClientEvent.SendMessage -> {
+            val chatId = event.chatId
+            val message = event.text
+
             chatsService.postMessage(
-                chatId = event.chatId,
-                text = event.text,
+                chatId = chatId,
+                text = message,
                 isFromUser = true
             )
 
+            val messageId: String = UUID.randomUUID().toString()
+
             launch {
-                simulateLlmStreaming(chatId = event.chatId, chatsService)
+                val aiResponse = StringBuilder()
+                aiSession.stream(message = message) { part ->
+                    if (part.isEmpty()) return@stream
+                    aiResponse.append(part)
+
+                    delay(30) // мне лень это анимировать на ui =)))
+                    chatsService.emitToMessageBus(
+                        ChatMessageDTO(
+                            id = messageId,
+                            chatId = chatId,
+                            text = aiResponse.toString(),
+                            isFromUser = false,
+                            isFull = false
+                        )
+                    )
+
+                }
+                chatsService.postMessage(
+                    id = messageId,
+                    chatId,
+                    aiResponse.toString().trim(),
+                    false
+                )
             }
         }
 
@@ -54,27 +82,27 @@ suspend fun DefaultWebSocketServerSession.handleChatEvent(
     }
 }
 
-suspend fun simulateLlmStreaming(chatId: String, chatService: ChatsService) {
-    val fullResponse = "Это ооооооочеьн долгий ответ о о о о о о о о о о о о о о о о о о о о о о о о ответ от нейросети в реальном времени..."
-    val messageId = UUID.randomUUID().toString()
-    val sb = StringBuilder()
-
-    fullResponse.split(" ").forEach { word ->
-        delay(200)
-        val part = "$word "
-        sb.append(part)
-
-        chatService.emitToMessageBus(
-            ChatMessageDTO(
-                id = messageId,
-                chatId = chatId,
-                text = sb.toString(),
-                isFromUser = false,
-                isFull = false
-            )
-        )
-    }
-
-    chatService.postMessage(id = messageId, chatId, sb.toString().trim(), false)
-
-}
+//suspend fun simulateLlmStreaming(chatId: String, chatService: ChatsService) {
+//    val fullResponse =
+//        "Это ооооооочеьн долгий ответ о о о о о о о о о о о о о о о о о о о о о о о о ответ от нейросети в реальном времени..."
+//    val messageId = UUID.randomUUID().toString()
+//    val sb = StringBuilder()
+//
+//    fullResponse.split(" ").forEach { word ->
+//        delay(200)
+//        val part = "$word "
+//        sb.append(part)
+//
+//        chatService.emitToMessageBus(
+//            ChatMessageDTO(
+//                id = messageId,
+//                chatId = chatId,
+//                text = sb.toString(),
+//                isFromUser = false,
+//                isFull = false
+//            )
+//        )
+//    }
+//
+//    chatService.postMessage(id = messageId, chatId, sb.toString().trim(), false)
+//}
