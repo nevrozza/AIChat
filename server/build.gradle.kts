@@ -31,6 +31,11 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
 
     implementation(libs.koog.ktor)
+
+    // Database
+    implementation(libs.bundles.exposed)
+    implementation(libs.postgresql)
+    implementation(libs.hikaricp)
 }
 
 kotlin {

@@ -16,6 +16,11 @@ serialization = "1.10.0"
 logback = "1.5.27"
 koog = "0.6.1"
 
+# Database
+exposed = "1.0.0"
+postgresql = "42.7.10"
+hikaricp = "7.0.2"
+
 
 # App Architecture
 koin = "4.2.0-RC1"
@@ -81,11 +86,20 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 
 koog-ktor = { module = "ai.koog:koog-ktor", version.ref = "koog" }
 
+# Database
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+
 
 [bundles]
 presentation-api = ["decompose-core", "flowmvi-core", "flowmvi-essenty"]
 serialization = ["kotlinx-serialization-core", "kotlinx-serialization-protobuf"]
 core-ktor-client = ["ktor-client-core", "ktor-client-logging", "ktor-client-content-negotiation", "ktor-client-protobuf"]
+exposed = ["exposed-core", "exposed-jdbc", "exposed-dao", "exposed-kotlin-datetime"]
 
 
 [plugins]

@@ -13,10 +13,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import org.nevrozq.aichat.features.allRoutes
-import org.nevrozq.aichat.plugins.configureCORS
-import org.nevrozq.aichat.plugins.configureKoog
-import org.nevrozq.aichat.plugins.configureNegotiation
-import org.nevrozq.aichat.plugins.configureWebSockets
+import org.nevrozq.aichat.plugins.*
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
@@ -24,7 +21,7 @@ fun main() {
 }
 
 fun Application.module() {
-
+    configureDatabases()
     configureNegotiation()
     configureCORS()
     configureKoog()
