@@ -27,3 +27,5 @@ captures
 node_modules/
 /.env
 .env
+.gitlab-ci-local-variables.yml
+/.gitlab-ci-local-variables.yml
