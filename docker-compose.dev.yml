@@ -6,14 +6,14 @@ services:
     env_file:
       - ./.env
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 5
     ports:
-      - ${POSTGRES_PORT_PORT}:${POSTGRES_PORT_PORT}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     networks:
       - db_net
 
@@ -35,6 +35,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: backend
+      args:
+        - BUILD_TYPE=dev
     restart: unless-stopped
     depends_on:
       db:
@@ -46,8 +48,7 @@ services:
     networks:
       - db_net
       - llm_net
-    args:
-      - BUILD_TYPE=dev
+
 
   webapp:
     container_name: webapp
@@ -55,13 +56,14 @@ services:
       context: .
       dockerfile: Dockerfile
       target: frontend
+      args:
+        - BUILD_TYPE=dev
     restart: unless-stopped
     ports:
       - ${FRONT_PORT}:${FRONT_PORT}
     depends_on:
       - server
-    args:
-      - BUILD_TYPE=dev
+
 
 
 volumes:
