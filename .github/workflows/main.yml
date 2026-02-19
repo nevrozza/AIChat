@@ -74,3 +74,4 @@ jobs:
           build-args: |
             GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution --info
             DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable
+            FRONTEND_ENABLED=true
