@@ -40,10 +40,10 @@ COPY . .
 RUN --mount=type=cache,target=/home/gradle/.gradle \
     gradle :server:buildFatJar --no-daemon
 
-ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+ARG GRADLE_TASK=:app:web:wasmJsBrowserDistribution
 RUN gradle ${GRADLE_TASK} --no-daemon -Dorg.gradle.incremental=false
 
-ARG DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
+ARG DIST_PATH=app/web/build/dist/wasmJs/productionExecutable/
 RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
 
 
