@@ -7,6 +7,7 @@ RUN find . -type f \
     ! -name "*.properties" \
     ! -name "gradlew" \
     ! -name "settings.gradle.kts" \
+    ! -name "*.jar" \
     -delete
 
 # Build (gradle)
