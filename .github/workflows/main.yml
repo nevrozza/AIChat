@@ -60,7 +60,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_IMAGE_BACKEND }}:latest
           build-args: |
-            GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution --info
+            GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution --info -Pandroid.dependencyResolutionCheck.strategy=disallowed
             DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable
 
       - name: Build and Push Frontend
@@ -71,5 +71,5 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_IMAGE_FRONTEND }}:latest
           build-args: |
-            GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution --info
+            GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution --info -Pandroid.dependencyResolutionCheck.strategy=disallowed
             DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable
