@@ -37,7 +37,7 @@ COPY . .
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
     gradle :server:buildFatJar --no-daemon
 
-RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 gradle ${GRADLE_TASK} --no-daemon --info
+RUN gradle ${GRADLE_TASK} --no-daemon --info
 RUN mkdir -p /final_dist
 RUN cp -r ${DIST_PATH}/* /final_dist/
 
