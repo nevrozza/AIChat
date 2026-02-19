@@ -39,7 +39,7 @@ COPY . .
 
 RUN gradle :server:buildFatJar --no-daemon
 ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
-RUN gradle ${GRADLE_TASK} --no-daemon
+RUN gradle ${GRADLE_TASK} --no-daemon -Dorg.gradle.incremental=false
 
 ARG DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
 RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
