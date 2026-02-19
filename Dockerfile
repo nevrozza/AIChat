@@ -14,12 +14,12 @@ RUN find . -type f \
     \) -delete
 
 FROM gradle:9.3.1-jdk21-jammy AS deps
-WORKDIR /home/gradle/src
+WORKDIR /home/gradle/cache
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
-COPY --from=skeleton /staging /home/gradle/src
+COPY --from=skeleton /staging .
 
-RUN gradle help --no-daemon --stacktrace
+RUN gradle help --no-daemon
 
 
 FROM gradle:9.3.1-jdk21-jammy AS builder
@@ -34,7 +34,6 @@ ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
 
 COPY --from=deps /home/gradle/.gradle /home/gradle/.gradle
-COPY --from=deps /home/gradle/src /home/gradle/src
 
 COPY . .
 
