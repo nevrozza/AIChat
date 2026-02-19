@@ -27,17 +27,17 @@ COPY gradle gradle
 COPY build.gradle.kts settings.gradle.kts ./
 COPY buildSrc ./buildSrc
 
-COPY --from=skeleton /staging ./
+COPY --from=skeleton --chown=gradle:gradle /staging ./
 
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
     gradle help --no-daemon
 
-COPY . .
+COPY --chown=gradle:gradle . .
 
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
     gradle :server:buildFatJar --no-daemon
 
-RUN gradle ${GRADLE_TASK} --no-daemon --info
+RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 gradle ${GRADLE_TASK} --no-daemon --info
 RUN mkdir -p /final_dist
 RUN cp -r ${DIST_PATH}/* /final_dist/
 
