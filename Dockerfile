@@ -33,15 +33,15 @@ RUN apt-get update && apt-get install -y \
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
 
-COPY --from=deps /home/gradle/.gradle /home/gradle/.gradle
+# COPY --from=deps /home/gradle/.gradle /home/gradle/.gradle
 
 COPY . .
 
 RUN --mount=type=cache,target=/home/gradle/.gradle \
     gradle :server:buildFatJar --no-daemon
 
-ARG GRADLE_TASK=:app:web:wasmJsBrowserDistribution
-RUN gradle ${GRADLE_TASK} --no-daemon -Dorg.gradle.incremental=false
+# ARG GRADLE_TASK=:app:web:wasmJsBrowserDistribution
+# RUN gradle ${GRADLE_TASK} --no-daemon
 
 ARG DIST_PATH=app/web/build/dist/wasmJs/productionExecutable/
 RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
