@@ -2,7 +2,12 @@
 FROM alpine AS skeleton
 WORKDIR /staging
 COPY . .
-RUN find . -type f ! -name "*.gradle.kts" ! -name "*.properties" ! -name "gradlew" ! -name "gradlew" -delete
+RUN find . -type f \
+    ! -name "*.gradle.kts" \
+    ! -name "*.properties" \
+    ! -name "gradlew" \
+    ! -name "settings.gradle.kts" \
+    -delete
 
 # Build (gradle)
 FROM gradle:9.3.1-jdk21-jammy AS builder
