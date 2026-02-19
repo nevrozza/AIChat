@@ -13,38 +13,30 @@ RUN find . -type f \
 FROM gradle:9.3.1-jdk21-jammy AS builder
 WORKDIR /home/gradle/src
 
+USER root
 RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    libstdc++6 \
-    ca-certificates \
+    python3 make g++ libstdc++6 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
-ARG DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
-
-
-ENV GRADLE_USER_HOME=/home/gradle/.gradle
-
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle.kts settings.gradle.kts ./
-COPY buildSrc ./buildSrc
+USER gradle
 
 COPY --from=skeleton --chown=gradle:gradle /staging ./
+RUN chmod +x gradlew
 
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
-    gradle help --no-daemon
+    ./gradlew help --no-daemon
 
 COPY --chown=gradle:gradle . .
 
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
-    gradle :server:buildFatJar --no-daemon
+    ./gradlew :server:buildFatJar --no-daemon
 
-RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 gradle ${GRADLE_TASK} --no-daemon --info
-RUN mkdir -p /final_dist
-RUN cp -r ${DIST_PATH}/* /final_dist/
+RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
+    ./gradlew ${GRADLE_TASK} --no-daemon --info
+
+# 6. Подготовка артефактов
+USER root
+RUN mkdir -p /final_dist && cp -r ${DIST_PATH}* /final_dist/
 
 
 # Backend
