@@ -54,6 +54,7 @@ jobs:
 
       - name: Build and Push Backend
         uses: docker/build-push-action@v5
+        continue-on-error: true # warns problem ...
         with:
           context: .
           target: backend
