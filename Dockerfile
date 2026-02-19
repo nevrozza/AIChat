@@ -1,45 +1,42 @@
-# Add only gradle config files
+
 FROM alpine AS skeleton
 WORKDIR /staging
+
 COPY . .
+RUN find . -type f -not \( -name "*.gradle.kts" -or -name "*.properties" -or -name "gradlew" -or -name "settings.gradle.kts" \) -delete
 
-RUN rm -rf .git .idea .gradle
 
-RUN find . -type f \
-    ! -name "*.gradle.kts" \
-    ! -name "*.properties" \
-    ! -name "gradlew" \
-    ! -name "settings.gradle.kts" \
-    ! -name "gradle-wrapper.jar" \
-    -delete
+FROM gradle:9.3.1-jdk21-jammy AS deps
+WORKDIR /home/gradle/src
+ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
-# Build (gradle)
+COPY --from=skeleton /staging /home/gradle/src
+
+RUN gradle help --no-daemon --stacktrace
+
+
 FROM gradle:9.3.1-jdk21-jammy AS builder
 WORKDIR /home/gradle/src
 
-USER root
+
 RUN apt-get update && apt-get install -y \
     python3 make g++ libstdc++6 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-USER gradle
+ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
-COPY --from=skeleton --chown=gradle:gradle /staging ./
-RUN chmod +x gradlew
 
-RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
-    ./gradlew help --no-daemon
+COPY --from=deps /home/gradle/.gradle /home/gradle/.gradle
+COPY --from=deps /home/gradle/src /home/gradle/src
 
-COPY --chown=gradle:gradle . .
+COPY . .
 
-RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
-    ./gradlew :server:buildFatJar --no-daemon
+RUN gradle :server:buildFatJar --no-daemon
+ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+RUN gradle ${GRADLE_TASK} --no-daemon
 
-RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
-    ./gradlew ${GRADLE_TASK} --no-daemon --info
-
-USER root
-RUN mkdir -p /final_dist && cp -r ${DIST_PATH}* /final_dist/
+ARG DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
+RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
 
 
 # Backend
@@ -50,7 +47,6 @@ ENTRYPOINT ["java","-jar","server.jar"]
 
 # Frontend
 FROM nginx:stable-alpine AS frontend
-
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /final_dist /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
