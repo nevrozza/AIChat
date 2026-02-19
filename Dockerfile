@@ -37,7 +37,9 @@ COPY --from=deps /home/gradle/.gradle /home/gradle/.gradle
 
 COPY . .
 
-RUN gradle :server:buildFatJar --no-daemon
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+    gradle :server:buildFatJar --no-daemon
+
 ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
 RUN gradle ${GRADLE_TASK} --no-daemon -Dorg.gradle.incremental=false
 
