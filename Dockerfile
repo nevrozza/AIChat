@@ -37,14 +37,14 @@ ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
 COPY . .
 
-# RUN --mount=type=cache,target=/home/gradle/.gradle \
-#     gradle :server:buildFatJar --no-daemon
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+    gradle :server:buildFatJar --no-daemon
 
-ARG GRADLE_TASK=:app:web:wasmJsBrowserDistribution
-RUN gradle ${GRADLE_TASK} --no-daemon
+# ARG GRADLE_TASK=:app:web:wasmJsBrowserDistribution
+# RUN gradle ${GRADLE_TASK} --no-daemon
 
-ARG DIST_PATH=app/web/build/dist/wasmJs/productionExecutable/
-RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
+# ARG DIST_PATH=app/web/build/dist/wasmJs/productionExecutable/
+# RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
 
 
 # Backend
