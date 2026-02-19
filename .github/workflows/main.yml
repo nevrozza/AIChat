@@ -3,6 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ "**" ]
+  workflow_dispatch:
 
 variables:
   DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/aichat-backend
