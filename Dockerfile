@@ -56,5 +56,5 @@ ENTRYPOINT ["java","-jar","server.jar"]
 # Frontend
 FROM nginx:stable-alpine AS frontend
 RUN rm -rf /usr/share/nginx/html/*
-COPY --from=builder /final_dist /usr/share/nginx/html
+# COPY --from=builder /final_dist /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
