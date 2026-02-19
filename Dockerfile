@@ -2,12 +2,15 @@
 FROM alpine AS skeleton
 WORKDIR /staging
 COPY . .
+
+RUN rm -rf .git .idea .gradle
+
 RUN find . -type f \
     ! -name "*.gradle.kts" \
     ! -name "*.properties" \
     ! -name "gradlew" \
     ! -name "settings.gradle.kts" \
-    ! -path "*/gradle/wrapper/*" \
+    ! -name "gradle-wrapper.jar" \
     -delete
 
 # Build (gradle)
@@ -35,7 +38,6 @@ RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
     ./gradlew ${GRADLE_TASK} --no-daemon --info
 
-# 6. Подготовка артефактов
 USER root
 RUN mkdir -p /final_dist && cp -r ${DIST_PATH}* /final_dist/
 
@@ -43,10 +45,7 @@ RUN mkdir -p /final_dist && cp -r ${DIST_PATH}* /final_dist/
 # Backend
 FROM eclipse-temurin:21-jre-alpine AS backend
 WORKDIR /server
-
 COPY --from=builder /home/gradle/src/server/build/libs/fat.jar ./server.jar
-
-EXPOSE 8080
 ENTRYPOINT ["java","-jar","server.jar"]
 
 # Frontend
@@ -54,6 +53,4 @@ FROM nginx:stable-alpine AS frontend
 
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /final_dist /usr/share/nginx/html
-
-EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
