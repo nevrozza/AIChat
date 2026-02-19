@@ -31,6 +31,9 @@ services:
       context: .
       dockerfile: Dockerfile
       target: backend
+      args:
+        - GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+        - DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
     restart: unless-stopped
     depends_on:
       db:
@@ -42,9 +45,6 @@ services:
     networks:
       - db_net
       - llm_net
-    args:
-      - GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
-      - DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
 
   webapp:
     container_name: webapp
@@ -52,14 +52,14 @@ services:
       context: .
       dockerfile: Dockerfile
       target: frontend
+      args:
+        - GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+        - DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
     restart: unless-stopped
     ports:
       - ${FRONT_PORT}:${FRONT_PORT}
     depends_on:
       - server
-    args:
-      - GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
-      - DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
 
 
 volumes:

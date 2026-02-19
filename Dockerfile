@@ -33,18 +33,18 @@ RUN apt-get update && apt-get install -y \
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
 
-# COPY --from=deps /home/gradle/.gradle /home/gradle/.gradle
+COPY --from=deps /home/gradle/.gradle /home/gradle/.gradle
 
 COPY . .
 
-RUN --mount=type=cache,target=/home/gradle/.gradle \
-    gradle :server:buildFatJar --no-daemon
+RUN gradle :server:buildFatJar --no-daemon
 
-# ARG GRADLE_TASK=:app:web:wasmJsBrowserDistribution
-# RUN gradle ${GRADLE_TASK} --no-daemon
 
-# ARG DIST_PATH=app/web/build/dist/wasmJs/productionExecutable/
-# RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
+ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+RUN gradle ${GRADLE_TASK} --no-daemon
+
+ARG DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
+RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
 
 
 # Backend
@@ -56,5 +56,5 @@ ENTRYPOINT ["java","-jar","server.jar"]
 # Frontend
 FROM nginx:stable-alpine AS frontend
 RUN rm -rf /usr/share/nginx/html/*
-# COPY --from=builder /final_dist /usr/share/nginx/html
+COPY --from=builder /final_dist /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
