@@ -7,7 +7,7 @@ RUN find . -type f \
     ! -name "*.properties" \
     ! -name "gradlew" \
     ! -name "settings.gradle.kts" \
-    ! -name "*.jar" \
+    ! -path "*/gradle/wrapper/*" \
     -delete
 
 # Build (gradle)
