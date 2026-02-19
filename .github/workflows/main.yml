@@ -54,7 +54,6 @@ jobs:
 
       - name: Build and Push Backend
         uses: docker/build-push-action@v5
-        continue-on-error: true # warns problem ...
         with:
           context: .
           target: backend
@@ -63,6 +62,7 @@ jobs:
           build-args: |
             GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution --info
             DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable
+            FRONTEND_ENABLED=true
 
       - name: Build and Push Frontend
         uses: docker/build-push-action@v5

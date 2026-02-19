@@ -39,12 +39,20 @@ COPY . .
 
 RUN gradle :server:buildFatJar --no-daemon
 
+ARG FRONTEND_ENABLED=false
 
-ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
-RUN gradle ${GRADLE_TASK} --no-daemon
+RUN if [ "$FRONTEND_ENABLED" = "false" ]; then \
+        gradle ${GRADLE_TASK} --no-daemon; \
+    else \
+        echo "Frontend build skipped"; \
+    fi
 
 ARG DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
-RUN mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/
+RUN if [ "$FRONTEND_ENABLED" = "false" ]; then \
+        mkdir -p /final_dist && cp -r ${DIST_PATH}/* /final_dist/; \
+    else \
+        mkdir -p /final_dist && touch /final_dist/placeholder.txt; \
+    fi
 
 
 # Backend
