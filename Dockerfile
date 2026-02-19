@@ -3,12 +3,14 @@ FROM alpine AS skeleton
 WORKDIR /staging
 
 COPY . .
-RUN find . -type f -not \( \
-    -name "*.gradle.kts" \
-    -or -name "*.properties" \
-    -or -name "*.toml" \
-    -or -name "gradlew" \
-    -or -name "gradle-wrapper.jar" \
+RUN find . -type f \
+    -not -path "./buildSrc/*" \
+    -not \( \
+        -name "*.gradle.kts" \
+        -or -name "*.properties" \
+        -or -name "*.toml" \
+        -or -name "gradlew" \
+        -or -name "gradle-wrapper.jar" \
     \) -delete
 
 FROM gradle:9.3.1-jdk21-jammy AS deps
