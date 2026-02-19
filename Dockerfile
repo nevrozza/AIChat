@@ -16,7 +16,10 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-ARG BUILD_TYPE=prod
+ARG GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+ARG DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
+
+
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 
 COPY gradlew .
@@ -34,17 +37,10 @@ COPY . .
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
     gradle :server:buildFatJar --no-daemon
 
-# build front (dev: wasmJsDev, prod: wasmJsAndJsProd)
 RUN --mount=type=cache,target=/home/gradle/.gradle,uid=1000,gid=1000 \
-    if [ "$BUILD_TYPE" = "dev" ]; then \
-        gradle :app:web:wasmJsBrowserDevelopmentExecutableDistribution --no-daemon && \
-        mkdir -p /final_dist && \
-        cp -r app/web/build/dist/wasmJs/developmentExecutable/* /final_dist/; \
-    else \
-        gradle :app:web:composeCompatibilityBrowserDistribution --no-daemon && \
-        mkdir -p /final_dist && \
-        cp -r app/web/build/dist/composeWebCompatibility/productionExecutable/* /final_dist/; \
-    fi
+    gradle ${GRADLE_TASK} --no-daemon && \
+    mkdir -p /final_dist && \
+    cp -r ${DIST_PATH}/* /final_dist/
 
 
 # Backend

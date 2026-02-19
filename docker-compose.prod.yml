@@ -43,7 +43,8 @@ services:
       - db_net
       - llm_net
     args:
-      - BUILD_TYPE=prod
+      - GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+      - DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
 
   webapp:
     container_name: webapp
@@ -57,7 +58,8 @@ services:
     depends_on:
       - server
     args:
-      - BUILD_TYPE=prod
+      - GRADLE_TASK=:app:web:composeCompatibilityBrowserDistribution
+      - DIST_PATH=app/web/build/dist/composeWebCompatibility/productionExecutable/
 
 
 volumes:

@@ -36,7 +36,8 @@ services:
       dockerfile: Dockerfile
       target: backend
       args:
-        - BUILD_TYPE=dev
+        - GRADLE_TASK=:app:web:wasmJsBrowserDevelopmentExecutableDistribution
+        - DIST_PATH=app/web/build/dist/wasmJs/developmentExecutable/
     restart: unless-stopped
     depends_on:
       db:
@@ -57,7 +58,8 @@ services:
       dockerfile: Dockerfile
       target: frontend
       args:
-        - BUILD_TYPE=dev
+        - GRADLE_TASK=:app:web:wasmJsBrowserDevelopmentExecutableDistribution
+        - DIST_PATH=app/web/build/dist/wasmJs/developmentExecutable/
     restart: unless-stopped
     ports:
       - ${FRONT_PORT}:${FRONT_PORT}
